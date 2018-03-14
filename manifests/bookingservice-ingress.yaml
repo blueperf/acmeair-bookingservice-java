@@ -1,0 +1,16 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+  name: booking-ingress
+spec:
+  rules:
+  - host:
+    http:
+      paths:
+      - path: /booking
+        backend:
+          serviceName: booking-service
+          servicePort: 9080

@@ -46,12 +46,9 @@ public class BookingServiceImpl implements BookingService, MongoConstants {
   @Inject
   KeyGenerator keyGenerator;
 
-  @Inject 
-  ConnectionManager connectionManager;
-  
   @PostConstruct
   public void initialization() {
-    MongoDatabase database = connectionManager.getDb();
+    MongoDatabase database = ConnectionManager.getConnectionManager().getDb();
     booking = database.getCollection("booking");
   }
   

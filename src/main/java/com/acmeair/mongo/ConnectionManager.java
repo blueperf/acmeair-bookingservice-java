@@ -23,137 +23,139 @@ import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoDatabase;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Properties;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonReaderFactory;
 
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-
-@ApplicationScoped
 public class ConnectionManager implements MongoConstants {
- 
+
+  private static AtomicReference<ConnectionManager> connectionManager = 
+      new AtomicReference<ConnectionManager>();
+
   private static final JsonReaderFactory factory = Json.createReaderFactory(null);
 
   private static final Logger logger = Logger.getLogger(ConnectionManager.class.getName());
 
   protected MongoClient mongoClient;
   protected MongoDatabase db;
-    
-  @Inject 
-  @ConfigProperty(name = "MONGO_HOST", defaultValue = "localhost") 
-  private String mongoHost;
-  
-  @Inject 
-  @ConfigProperty(name = "MONGO_PORT", defaultValue = "27017") 
-  private Integer mongoPort;
-  
-  @Inject 
-  @ConfigProperty(name = "MONGO_DBNAME", defaultValue = "acmeair_flightdb") 
-  private String mongoDbName;
-  
-  @Inject 
-  @ConfigProperty(name = "MONGO_USERNAME") 
-  private Optional<String> mongoUsername;
-  
-  @Inject 
-  @ConfigProperty(name = "MONGO_PASSWORD") 
-  private Optional<String> mongoPassword;
-    
-  @Inject 
-  @ConfigProperty(name = "MONGO_SSL_ENABLED") 
-  private Optional<Boolean> mongoSslEnabled;
-  
-  @Inject 
-  @ConfigProperty(name = "MONGO_MIN_CONNECTIONS_PER_HOST") 
-  private Optional<Integer> mongoMinConnectionsPerHost;
-  
-  @Inject 
-  @ConfigProperty(name = "MONGO_CONNECTIONS_PER_HOST") 
-  private Optional<Integer> mongoConnectionsPerHost;
-  
-  @Inject 
-  @ConfigProperty(name = "MONGO_MAX_WAIT_TIME") 
-  private Optional<Integer> mongoMaxWaitTime;
-  
-  @Inject 
-  @ConfigProperty(name = "MONGO_CONNECT_TIME_OUT") 
-  private Optional<Integer> mongoConnectTimeOut;
-  
-  @Inject 
-  @ConfigProperty(name = "MONGO_SOCKET_TIME_OUT") 
-  private Optional<Integer> mongoSocketTimeOut;
-  
-  @Inject 
-  @ConfigProperty(name = "MONGO_THREADS_ALLOWED_TO_BLOCK_FOR_CONNECTION_MULTIPLIER") 
-  private Optional<Integer> mongoThreadsAllowedToBlockForConnectionMultiplier;
-  
-  @Inject 
-  @ConfigProperty(name = "MONGO_MAX_CONNECTION_IDLE_TIME") 
-  private Optional<Integer> mongoMaxConnectionIdleTime;
-  
-  @Inject 
-  @ConfigProperty(name = "MONGO_SOCKET_KEEPALIVE") 
-  private Optional<Boolean> mongoSocketKeepalive;
-  
-  @Inject 
-  @ConfigProperty(name = "VCAP_SERVICES") 
-  Optional<String> vcapJsonString;
 
-  @PostConstruct
-  private void initialize() {     
+  /**
+   * Get mongo connection manager.
+   */
+  public static ConnectionManager getConnectionManager() {
+    if (connectionManager.get() == null) {
+      synchronized (connectionManager) {
+        if (connectionManager.get() == null) {
+          connectionManager.set(new ConnectionManager());
+        }
+      }
+    }
+    return connectionManager.get();
+  }
+
+  private ConnectionManager() {
+
+    // Set default client options, and then check if there is a properties file.
+    String hostname = "localhost";
+    int port = 27017;
+    String dbname = "acmeair";
+    String username = null;
+    String password = null;
+
+    Properties prop = new Properties();
+    String acmeairProps = System.getenv("ACMEAIR_PROPERTIES");
+    try {
+      if (acmeairProps != null) {
+        prop.load(new FileInputStream(acmeairProps));
+      } else {
+        prop.load(ConnectionManager.class.getResourceAsStream("/config.properties"));
+        acmeairProps = "OK";
+      }
+    } catch (IOException ex) {
+      logger.info("Properties file does not exist" + ex.getMessage());
+      acmeairProps = null;
+    }
 
     ServerAddress dbAddress = null;
     MongoClientOptions.Builder options = new MongoClientOptions.Builder();
+    if (acmeairProps != null) {
+      try {
+        logger.info("Reading mongo.properties file");
+        if (System.getenv("MONGO_HOST") != null) {
+          hostname = System.getenv("MONGO_HOST");
+        } else if (prop.containsKey("hostname")) {
+          hostname = prop.getProperty("hostname");
+        }
+        if (System.getenv("MONGO_PORT") != null) {
+          port = Integer.parseInt(System.getenv("MONGO_PORT"));
+        } else if (prop.containsKey("port")) {
+          port = Integer.parseInt(prop.getProperty("port"));
+        }
+        if (System.getenv("MONGO_DBNAME") != null) {
+          dbname = System.getenv("MONGO_DBNAME");
+        } else if (prop.containsKey("dbname")) {
+          dbname = prop.getProperty("dbname");
+        }
+        if (prop.containsKey("username")) {
+          username = prop.getProperty("username");
+        }
+        if (prop.containsKey("password")) {
+          password = prop.getProperty("password");
+        }
+        if (prop.containsKey("connectionsPerHost")) {
+          options.connectionsPerHost(Integer.parseInt(prop.getProperty("connectionsPerHost")));
+        }
+        if (prop.containsKey("minConnectionsPerHost")) {
+          options.minConnectionsPerHost(Integer.parseInt(prop
+              .getProperty("minConnectionsPerHost")));
+        }
+        if (prop.containsKey("maxWaitTime")) {
+          options.maxWaitTime(Integer.parseInt(prop.getProperty("maxWaitTime")));
+        }
+        if (prop.containsKey("connectTimeout")) {
+          options.connectTimeout(Integer.parseInt(prop.getProperty("connectTimeout")));
+        }
+        if (prop.containsKey("socketTimeout")) {
+          options.socketTimeout(Integer.parseInt(prop.getProperty("socketTimeout")));
+        }
+        if (prop.containsKey("socketKeepAlive")) {
+          options.socketKeepAlive(Boolean.parseBoolean(prop.getProperty("socketKeepAlive")));
+        }
+        if (prop.containsKey("sslEnabled")) {
+          options.sslEnabled(Boolean.parseBoolean(prop.getProperty("sslEnabled")));
+        }
+        if (prop.containsKey("threadsAllowedToBlockForConnectionMultiplier")) {
+          options.threadsAllowedToBlockForConnectionMultiplier(
+              Integer.parseInt(prop.getProperty("threadsAllowedToBlockForConnectionMultiplier")));
+        }
 
-    if (mongoConnectionsPerHost.isPresent()) {
-      options.connectionsPerHost(mongoConnectionsPerHost.get());
-    }
-    if (mongoMinConnectionsPerHost.isPresent()) {
-      options.minConnectionsPerHost(mongoMinConnectionsPerHost.get());
-    }
-    if (mongoMaxWaitTime.isPresent()) {
-      options.maxWaitTime(mongoMaxWaitTime.get());
-    }
-    if (mongoConnectTimeOut.isPresent()) {
-      options.connectTimeout(mongoConnectTimeOut.get());
-    }
-    if (mongoSocketTimeOut.isPresent()) {
-      options.socketTimeout(mongoSocketTimeOut.get());
-    }
-    if (mongoSocketKeepalive.isPresent()) {
-      options.socketKeepAlive(mongoSocketKeepalive.get());
-    }
-    if (mongoSslEnabled.isPresent()) {
-      options.sslEnabled(mongoSslEnabled.get());
-    }
-    if (mongoThreadsAllowedToBlockForConnectionMultiplier.isPresent()) {
-      options.threadsAllowedToBlockForConnectionMultiplier(
-          mongoThreadsAllowedToBlockForConnectionMultiplier.get());
-    }
-    if (mongoMaxConnectionIdleTime.isPresent()) {
-      options.maxConnectionIdleTime(mongoMaxConnectionIdleTime.get());
+      } catch (Exception ioe) {
+        logger.severe("Exception when trying to read from the mongo.properties file" 
+            + ioe.getMessage());
+      }
     }
 
     MongoClientOptions builtOptions = options.build();
-    
+
     try {
       // Check if VCAP_SERVICES exist, and if it does, look up the url from the
       // credentials.
-      if (vcapJsonString.isPresent()) {
+      String vcapJsonString = System.getenv("VCAP_SERVICES");
+      if (vcapJsonString != null) {
         logger.info("Reading VCAP_SERVICES");
 
-        JsonReader jsonReader = factory.createReader(new StringReader(vcapJsonString.get()));
+        JsonReader jsonReader = factory.createReader(new StringReader(vcapJsonString));
         JsonObject vcapServices = jsonReader.readObject();
         jsonReader.close();
 
@@ -176,16 +178,15 @@ public class ConnectionManager implements MongoConstants {
               "VCAP_SERVICES existed, but a MongoLAB or MongoDB by COMPOST service was "
               + "not definied. Trying DB resource");
           // VCAP_SERVICES don't exist, so use the DB resource
-          dbAddress = new ServerAddress(mongoHost, mongoPort);
+          dbAddress = new ServerAddress(hostname, port);
 
           // If username & password exists, connect DB with username & password
-          if ((!mongoUsername.isPresent()) || (!mongoPassword.isPresent())) {
+          if ((username == null) || (password == null)) {
             mongoClient = new MongoClient(dbAddress, builtOptions);
           } else {
             List<MongoCredential> credentials = new ArrayList<>();
             credentials.add(MongoCredential
-                .createCredential(mongoUsername.get(), mongoDbName, 
-                    mongoPassword.get().toCharArray()));
+                .createCredential(username, dbname, password.toCharArray()));
             mongoClient = new MongoClient(dbAddress, credentials, builtOptions);
           }
         } else {
@@ -195,30 +196,29 @@ public class ConnectionManager implements MongoConstants {
           logger.fine("service url = " + url);
           MongoClientURI mongoUri = new MongoClientURI(url, options);
           mongoClient = new MongoClient(mongoUri);
-          mongoDbName = mongoUri.getDatabase();
+          dbname = mongoUri.getDatabase();
 
         }
       } else {
 
         // VCAP_SERVICES don't exist, so use the DB resource
-        dbAddress = new ServerAddress(mongoHost, mongoPort);
+        dbAddress = new ServerAddress(hostname, port);
 
         // If username & password exists, connect DB with username & password
-        if ((!mongoUsername.isPresent()) || (!mongoPassword.isPresent())) {
+        if ((username == null) || (password == null)) {
           mongoClient = new MongoClient(dbAddress, builtOptions);
         } else {
           List<MongoCredential> credentials = new ArrayList<>();
           credentials.add(MongoCredential
-              .createCredential(mongoUsername.get(), mongoDbName, 
-                  mongoPassword.get().toCharArray()));
+              .createCredential(username, dbname, password.toCharArray()));
           mongoClient = new MongoClient(dbAddress, credentials, builtOptions);
         }
       }
 
-      db = mongoClient.getDatabase(mongoDbName);
+      db = mongoClient.getDatabase(dbname);
       logger.info("#### Mongo DB Server " + mongoClient.getAddress().getHost() + " ####");
       logger.info("#### Mongo DB Port " + mongoClient.getAddress().getPort() + " ####");
-      logger.info("#### Mongo DB is created with DB name " + mongoDbName + " ####");
+      logger.info("#### Mongo DB is created with DB name " + dbname + " ####");
       logger.info("#### MongoClient Options ####");
       logger.info("maxConnectionsPerHost : " + builtOptions.getConnectionsPerHost());
       logger.info("minConnectionsPerHost : " + builtOptions.getMinConnectionsPerHost());

@@ -16,6 +16,8 @@
 
 package com.acmeair.web;
 
+import com.acmeair.client.CustomerClient;
+import com.acmeair.client.FlightClient;
 import com.acmeair.securityutils.SecurityUtils;
 import com.acmeair.service.BookingService;
 
@@ -28,7 +30,6 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonReaderFactory;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.FormParam;
@@ -40,8 +41,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.eclipse.microprofile.metrics.annotation.Timed;
-
 @Path("/")
 public class BookingServiceRest {
 
@@ -52,11 +51,29 @@ public class BookingServiceRest {
   private SecurityUtils secUtils;
 
   @Inject
-  private RewardTracker rewardTracker;
+  private FlightClient flightClient;
+
+  @Inject
+  private CustomerClient customerClient;
 
   private static final Logger logger = Logger.getLogger(BookingServiceRest.class.getName());
-  private static final JsonReaderFactory factory = Json.createReaderFactory(null);  
+
+  private static final JsonReaderFactory factory = Json.createReaderFactory(null);
+
+  // TRACK MILES OPTIONS
+  private static final Boolean TRACK_REWARD_MILES = Boolean
+      .valueOf((System.getenv("TRACK_REWARD_MILES") == null) ? "false" 
+          : System.getenv("TRACK_REWARD_MILES"));
   
+  private static final Boolean SECURE_USER_CALLS = Boolean
+      .valueOf((System.getenv("SECURE_USER_CALLS") == null) ? "true" 
+          : System.getenv("SECURE_USER_CALLS"));
+
+  static {
+    System.out.println("TRACK_REWARD_MILES: " + TRACK_REWARD_MILES);
+    System.out.println("SECURE_USER_CALLS: " + SECURE_USER_CALLS);
+  }
+
   /**
    * Book flights.
    */
@@ -64,7 +81,6 @@ public class BookingServiceRest {
   @Consumes({ "application/x-www-form-urlencoded" })
   @Path("/bookflights")
   @Produces("text/plain")
-  @Timed(name = "com.acmeair.web.BookingServiceRest.bookFlights",tags = "app=bookingservice-java") 
   public /* BookingInfo */ Response bookFlights(@FormParam("userid") String userid,
       @FormParam("toFlightId") String toFlightId, 
       @FormParam("toFlightSegId") String toFlightSegId,
@@ -74,26 +90,23 @@ public class BookingServiceRest {
       @CookieParam("jwt_token") String jwtToken) {
     try {
       // make sure the user isn't trying to bookflights for someone else
-      if (secUtils.secureUserCalls() && !secUtils.validateJwt(userid, jwtToken)) {
+      if (SECURE_USER_CALLS && !secUtils.validateJwt(userid, jwtToken)) {
         return Response.status(Response.Status.FORBIDDEN).build();
       }
 
       String bookingIdTo = bs.bookFlight(userid, toFlightSegId, toFlightId);
-      
-      if (rewardTracker.trackRewardMiles()) {
-        rewardTracker.updateRewardMiles(userid, toFlightSegId, true);
+      if (TRACK_REWARD_MILES) {
+        updateRewardMiles(userid, toFlightSegId, true);
       }
-      
+
       String bookingInfo = "";
+
       String bookingIdReturn = null;
-      
       if (!oneWay) {
         bookingIdReturn = bs.bookFlight(userid, retFlightSegId, retFlightId);
-        
-        if (rewardTracker.trackRewardMiles()) {
-          rewardTracker.updateRewardMiles(userid, retFlightSegId, true);
+        if (TRACK_REWARD_MILES) {
+          updateRewardMiles(userid, retFlightSegId, true);
         }
-        
         bookingInfo = "{\"oneWay\":false,\"returnBookingId\":\"" 
             + bookingIdReturn + "\",\"departBookingId\":\""
             + bookingIdTo + "\"}";
@@ -113,14 +126,12 @@ public class BookingServiceRest {
   @GET
   @Path("/bybookingnumber/{userid}/{number}")
   @Produces("text/plain")
-  @Timed(name = "com.acmeair.web.BookingServiceRest.getBookingByNumber",
-      tags = "app=bookingservice-java") 
   public Response getBookingByNumber(@PathParam("number") String number, 
       @PathParam("userid") String userid,
       @CookieParam("jwt_token") String jwtToken) {
     try {
       // make sure the user isn't trying to bookflights for someone else
-      if (secUtils.secureUserCalls() && !secUtils.validateJwt(userid, jwtToken)) {
+      if (SECURE_USER_CALLS && !secUtils.validateJwt(userid, jwtToken)) {
         return Response.status(Response.Status.FORBIDDEN).build();
       }
       return Response.ok(bs.getBooking(userid, number)).build();
@@ -136,14 +147,12 @@ public class BookingServiceRest {
   @GET
   @Path("/byuser/{user}")
   @Produces("text/plain")
-  @Timed(name = "com.acmeair.web.bookFlights.BookingServiceRest.getBookingsByUser",
-      tags = "app=bookingervice-java")
   public Response getBookingsByUser(@PathParam("user") String user, 
       @CookieParam("jwt_token") String jwtToken) {
 
     try {
       // make sure the user isn't trying to bookflights for someone else
-      if (secUtils.secureUserCalls() && !secUtils.validateJwt(user, jwtToken)) {
+      if (SECURE_USER_CALLS && !secUtils.validateJwt(user, jwtToken)) {
         return Response.status(Response.Status.FORBIDDEN).build();
       }
       return Response.ok(bs.getBookingsByUser(user).toString()).build();
@@ -160,18 +169,16 @@ public class BookingServiceRest {
   @Consumes({ "application/x-www-form-urlencoded" })
   @Path("/cancelbooking")
   @Produces("text/plain")
-  @Timed(name = "com.acmeair.web.bookFlights.BookingServiceRest.cancelBookingsByNumber",
-      tags = "app=bookingervice-java")
   public Response cancelBookingsByNumber(@FormParam("number") String number, 
       @FormParam("userid") String userid,
       @CookieParam("jwt_token") String jwtToken) {
     try {
       // make sure the user isn't trying to bookflights for someone else
-      if (secUtils.secureUserCalls() && !secUtils.validateJwt(userid, jwtToken)) {
+      if (SECURE_USER_CALLS && !secUtils.validateJwt(userid, jwtToken)) {
         return Response.status(Response.Status.FORBIDDEN).build();
       }
-     
-      if (rewardTracker.trackRewardMiles()) {
+
+      if (TRACK_REWARD_MILES) {
         try {
           JsonReader jsonReader = factory.createReader(new StringReader(bs
               .getBooking(userid, number)));
@@ -179,7 +186,7 @@ public class BookingServiceRest {
           jsonReader.close();
 
           bs.cancelBooking(userid, number);
-          rewardTracker.updateRewardMiles(userid, booking.getString("flightSegmentId"), false);
+          updateRewardMiles(userid, booking.getString("flightSegmentId"), false);
         } catch (RuntimeException re) {
           // booking does not exist
           if (logger.isLoggable(Level.FINE)) {
@@ -189,6 +196,7 @@ public class BookingServiceRest {
       } else {
         bs.cancelBooking(userid, number);
       }
+
       return Response.ok("booking " + number + " deleted.").build();
 
     } catch (Exception e) {
@@ -200,5 +208,10 @@ public class BookingServiceRest {
   @GET
   public Response checkStatus() {
     return Response.ok("OK").build();
+  }
+
+  private void updateRewardMiles(String customerId, String flightSegId, boolean add) {
+    String miles = flightClient.getRewardMiles(customerId, flightSegId, add);
+    customerClient.updateTotalMiles(customerId, miles);
   }
 }

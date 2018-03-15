@@ -35,6 +35,6 @@ public class BookingServiceApp extends Application {
   public Set<Class<?>> getClasses() {
     return new HashSet<Class<?>>(
         Arrays.asList(BookingServiceRest.class, BookingConfiguration.class, 
-            BookingLoaderRest.class,HealthCheckRest.class));
+            BookingLoaderRest.class));
   }
 }

@@ -12,11 +12,11 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>bookingservice-java</groupId>
+	<groupId>acmeair-bookingservice-java</groupId>
 	<version>2.0.0-SNAPSHOT</version>
-	<artifactId>bookingservice-java</artifactId>
+	<artifactId>acmeair-bookingservice-java</artifactId>
 	<packaging>war</packaging>
-	<name>Booking Service :: Java</name>
+	<name>AcmeAir :: Booking Service :: Java</name>
 
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>

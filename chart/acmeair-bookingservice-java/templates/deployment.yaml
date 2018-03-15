@@ -79,9 +79,9 @@ spec:
           - name: PASSWORD
             value: password
           - name: MONGO_HOST
-            value: booking-db
+            value: acmeair-booking-db
           - name: JVM_ARGS
-            value: "-Dcom.acmeair.client.CustomerClient/mp-rest/url=http://customer-service:9080 -Dcom.acmeair.client.FlightClient/mp-rest/url=http://flight-service:9080"
+            value: "-Dcom.acmeair.client.CustomerClient/mp-rest/url=http://acmeair-customer-service:9080 -Dcom.acmeair.client.FlightClient/mp-rest/url=http://acmeair-flight-service:9080"
           - name: TRACK_REWARD_MILES
             value: 'true'
           - name: SECURE_SERVICE_CALLS

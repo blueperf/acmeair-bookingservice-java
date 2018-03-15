@@ -1,6 +1,0 @@
-FROM openliberty/open-liberty:microProfile1
-
-COPY server.xml /config/server.xml
-COPY jvm.options /config/jvm.options
-COPY target/*service-java-2.0.0-SNAPSHOT.war /config/apps/
-

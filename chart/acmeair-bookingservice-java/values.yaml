@@ -3,7 +3,7 @@
 replicaCount: 1
 revisionHistoryLimit: 1
 image:
-  repository: bookingservice-java
+  repository: acmeair-bookingservice-java
   tag: latest
   pullPolicy: IfNotPresent
   resources:
@@ -11,7 +11,7 @@ image:
       cpu: 200m
       memory: 300Mi
 service:
-  name: booking-service
+  name: acmeair-booking-service
   type: ClusterIP 
   servicePort: 9080
   servicePortHttps: 9443

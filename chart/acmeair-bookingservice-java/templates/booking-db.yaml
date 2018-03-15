@@ -5,8 +5,8 @@ kind: Service
 metadata:
   creationTimestamp: null
   labels:
-    service: booking-db
-  name: booking-db
+    service: acmeair-booking-db
+  name: acmeair-booking-db
 spec:
   ports:
   - name: "27017"
@@ -14,7 +14,7 @@ spec:
     protocol: TCP
     targetPort: 27017
   selector:
-    service: booking-db
+    service: acmeair-booking-db
 status:
   loadBalancer: {}
 ---
@@ -22,7 +22,7 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   creationTimestamp: null
-  name: booking-db
+  name: acmeair-booking-db
 spec:
   replicas: 1
   strategy: {}
@@ -30,11 +30,11 @@ spec:
     metadata:
       creationTimestamp: null
       labels:
-        service: booking-db
+        service: acmeair-booking-db
     spec:
       containers:
       - image: mongo
-        name: booking-db
+        name: acmeair-booking-db
         ports:
         - containerPort: 27017
           protocol: TCP

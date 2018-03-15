@@ -1,20 +1,20 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: bookingservice
+  name: acmeair-bookingservice
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        name: booking-deployment
+        name: acmeair-booking-deployment
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: "9080"
     spec:
       containers:
-      - name: bookingservice-java
-        image: bookingservice-java:latest
+      - name: acmeair-bookingservice-java
+        image: acmeair-bookingservice-java:latest
         ports:
           - containerPort: 9080
           - containerPort: 9443
@@ -25,32 +25,13 @@ spec:
         - name: PASSWORD
           value: password
         - name: MONGO_HOST
-          value: booking-db
+          value: acmeair-booking-db
         - name: JVM_ARGS
-          value: "-Dcom.acmeair.client.CustomerClient/mp-rest/url=http://customer-service:9080 -Dcom.acmeair.client.FlightClient/mp-rest/url=http://flight-service:9080"
+          value: "-Dcom.acmeair.client.CustomerClient/mp-rest/url=http://acmeair-customer-service:9080 -Dcom.acmeair.client.FlightClient/mp-rest/url=http://acmeair-flight-service:9080"
         - name: TRACK_REWARD_MILES
           value: 'true'
         - name: SECURE_SERVICE_CALLS
           value: 'true'
-        - name: MB_KEYSTORE_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: mb-keystore-password
-              key: password
-        - name: MB_TRUSTSTORE_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: mb-truststore-password
-              key: password
-        volumeMounts:
-          - name: keystores
-            mountPath: /etc/wlp/config/keystore
-            readOnly: true
-          - name: truststores
-            mountPath: /etc/wlp/config/truststore
-            readOnly: true
-          - name: liberty-config
-            mountPath: /config/configDropins
         readinessProbe:
           httpGet:
             path: /health
@@ -63,32 +44,17 @@ spec:
             port: 9080
           initialDelaySeconds: 120
           periodSeconds: 15
-      volumes:
-        - name: keystores
-          secret:
-            secretName: mb-keystore
-        - name: truststores
-          secret:
-            secretName: mb-truststore
-        - name: liberty-config
-          configMap:
-            name: liberty-logging-config
-            items:
-              - key: keystore.xml
-                path: defaults/keystore.xml
-              - key: logging.xml
-                path: defaults/logging.xml
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: booking-service
+  name: acmeair-booking-service
   namespace: default
 spec:
   ports:
     - port: 9080
   selector:
-    name: booking-deployment
+    name: acmeair-booking-deployment
 ---
 ##### Booking Database  #####
 apiVersion: v1
@@ -96,8 +62,8 @@ kind: Service
 metadata:
   creationTimestamp: null
   labels:
-    service: booking-db
-  name: booking-db
+    service: acmeair-booking-db
+  name: acmeair-booking-db
 spec:
   ports:
   - name: "27017"
@@ -105,7 +71,7 @@ spec:
     protocol: TCP
     targetPort: 27017
   selector:
-    service: booking-db
+    service: acmeair-booking-db
 status:
   loadBalancer: {}
 ---
@@ -113,7 +79,7 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   creationTimestamp: null
-  name: booking-db
+  name: acmeair-booking-db
 spec:
   replicas: 1
   strategy: {}
@@ -121,11 +87,11 @@ spec:
     metadata:
       creationTimestamp: null
       labels:
-        service: booking-db
+        service: acmeair-booking-db
     spec:
       containers:
       - image: mongo
-        name: booking-db
+        name: acmeair-booking-db
         ports:
         - containerPort: 27017
           protocol: TCP

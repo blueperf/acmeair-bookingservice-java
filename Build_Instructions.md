@@ -13,20 +13,20 @@ If the sample git repository hasn't been cloned yet, use git tools integrated in
 2.  Copy Git repo url by finding the textbox under "HTTPS clone URL" at the top of this page, and select *Copy to clipboard*
 3.  In the Git repositories view, select the hyperlink `Clone a Git repository`
 4.  The git repo url should already be filled in.  Select *Next -> Next -> Finish*
-5.  The "bookingservice-java [master]" repo should appear in the view
+5.  The "acmeair-bookingservice-java [master]" repo should appear in the view
 
 ###### Import Maven projects into WDT
 
-1.  In the Git Repository view, expand the bookingservice-java repo to see the "Working Directory" folder
+1.  In the Git Repository view, expand the acmeair-bookingservice-java repo to see the "Working Directory" folder
 2.  Right-click on this folder, and select *Copy path to Clipboard*
 3.  Select menu *File -> Import -> Maven -> Existing Maven Projects*
 4.  In the Root Directory textbox, Paste in the repository directory.
 5.  Select *Browse...* button and select *Finish* (confirm it finds 1 pom.xml files)
-6.  This will create 1 projects in Eclipse: bookingservice-java
+6.  This will create 1 projects in Eclipse: acmeair-bookingservice-java
 
 ###### Run Maven install
 
-1. Right-click on bookingservice-java/pom.xml
+1. Right-click on acmeair-bookingservice-java/pom.xml
 2. *Run As > Maven build...*
 3. In the *Goals* section enter "package"
 4. Click *Run*
@@ -34,7 +34,7 @@ If the sample git repository hasn't been cloned yet, use git tools integrated in
 *Note:* If you did not use Eclipse to clone the git repository, follow from step 3, but navigate to the cloned repository directory rather than pasting its name in step 4.
 
 This will download prerequisite jars and build:  
-* bookingservice-java/target/bookingservice-java-2.0.0-SNAPSHOT.war  
+* acmeair-bookingservice-java/target/acmeair-bookingservice-java-2.0.0-SNAPSHOT.war  
 
 
 # Building acmeair booking service using the Command Line
@@ -60,13 +60,13 @@ Linux:
 
 ##### Clone Git Repo
 
-	git clone https://github.ibm.com/BluemixPerf/bookingservice-java.git
+	git clone https://github.com/blueperf/acmeair-bookingservice-java.git
 
 ##### Building the sample
 
   
-	cd <bookingservice_GIT_PATH>  
+	cd <acmeair-bookingservice-java_GIT_PATH>  
 	mvn clean package
 
 This will download prerequisite jars and build:  
-* bookingservice-java/target/bookingservice-java-2.0.0-SNAPSHOT.war 
+* acmeair-bookingservice-java/target/acmeair-bookingservice-java-2.0.0-SNAPSHOT.war 

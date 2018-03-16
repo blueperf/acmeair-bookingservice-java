@@ -1,0 +1,15 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    ingress.bluemix.net/rewrite-path: "serviceName=acmeair-booking-service rewrite=/"
+  name: acmeair-booking-ingress
+spec:
+  rules:
+  - host: INGRESS_URL
+    http:
+      paths:
+      - path: /booking
+        backend:
+          serviceName: acmeair-booking-service
+          servicePort: 9080

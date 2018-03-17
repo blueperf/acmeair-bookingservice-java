@@ -11,9 +11,9 @@ This implementation can support running on a variety of runtime platforms includ
 
 ## Docker Instructions
 
-See Documentation for the Main Service
+See Documentation for the [Main Service](https://github.com/blueperf/acmeair-mainservice-java)
 
 
 ## IBM Container Instructions
 
-See Documentation for the Main Service
+See Documentation for the [Main Service](https://github.com/blueperf/acmeair-mainservice-java)

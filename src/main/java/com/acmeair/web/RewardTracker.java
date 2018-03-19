@@ -62,7 +62,9 @@ public class RewardTracker {
     
     if (trackRewardMiles) {
       
-      Long miles = null;     
+      Long miles = null;   
+      Long callFailed = new Long (-1);
+      
       try {
         miles = flightClientConnection.connect(userid, flightSegId, add);
       } catch (Exception e) {
@@ -71,8 +73,9 @@ public class RewardTracker {
       }    
       
       Long totalMiles = null;
-      if (miles != null && !miles.equals(-1)) {
+      if (miles != null && !miles.equals(callFailed)) {
         try {
+          System.out.print(miles);
           totalMiles = customerClientConection.connect(userid, miles);
         } catch (Exception e) {
           e.printStackTrace();
@@ -83,7 +86,7 @@ public class RewardTracker {
             + userid + ", flightSegment " + flightSegId);
         return CompletableFuture.completedFuture(null);
       }  
-      if (totalMiles != null && !totalMiles.equals(-1)) {
+      if (totalMiles != null && !totalMiles.equals(callFailed)) {
         return CompletableFuture.completedFuture(totalMiles);
       } else {
         System.out.println("CustomerSevice Call Failed: Updating Reward Miles Failed for " 

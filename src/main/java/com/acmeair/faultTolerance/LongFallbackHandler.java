@@ -24,13 +24,13 @@ import org.eclipse.microprofile.faulttolerance.FallbackHandler;
 
 @Dependent
 public class LongFallbackHandler implements FallbackHandler<Long> {
-	  protected static Logger logger =  Logger.getLogger(LongFallbackHandler.class.getName());
+  protected static Logger logger =  Logger.getLogger(LongFallbackHandler.class.getName());
 
 
-	@Override
-    public Long handle(ExecutionContext context) {
-		logger.info("fallback for " + context.getMethod().getName());		
-        return new Long(-1);
-    }
-
+  @Override
+  public Long handle(ExecutionContext context) {
+    System.out.println("Client Call Failed - check connection to Customer or Flight Service.");
+    logger.info("fallback for " + context.getMethod().getName());		
+    return new Long(-1);
+  }
 }

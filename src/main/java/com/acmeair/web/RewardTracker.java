@@ -75,7 +75,6 @@ public class RewardTracker {
       Long totalMiles = null;
       if (miles != null && !miles.equals(callFailed)) {
         try {
-          System.out.print(miles);
           totalMiles = customerClientConection.connect(userid, miles);
         } catch (Exception e) {
           e.printStackTrace();

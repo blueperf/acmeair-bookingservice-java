@@ -14,4 +14,4 @@ ingress:
   path: "/booking"
 
 env:
-  jvmArgs: "-Dcom.acmeair.client.CustomerClient/mp-rest/url=http://acmeair-customerservice:9080 -Dcom.acmeair.client.FlightClient/mp-rest/url=http://acmeair-flightservice-ja:9080 -DMONGO_HOST=acmeair-booking-db"
+  jvmArgs: "-Dcom.acmeair.client.CustomerClient/mp-rest/url=http://acmeair-customer-service:9080 -Dcom.acmeair.client.FlightClient/mp-rest/url=http://acmeair-flight-service:9080 -DMONGO_HOST=acmeair-booking-db"

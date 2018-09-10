@@ -1,0 +1,42 @@
+##### Booking Database  #####
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    service: acmeair-booking-db
+  name: acmeair-booking-db
+spec:
+  ports:
+  - name: "27017"
+    port: 27017
+    protocol: TCP
+    targetPort: 27017
+  selector:
+    service: acmeair-booking-db
+status:
+  loadBalancer: {}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  name: acmeair-booking-db
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        service: acmeair-booking-db
+    spec:
+      containers:
+      - image: mongo
+        name: acmeair-booking-db
+        ports:
+        - containerPort: 27017
+          protocol: TCP
+        resources: {}
+      restartPolicy: Always
+status: {}

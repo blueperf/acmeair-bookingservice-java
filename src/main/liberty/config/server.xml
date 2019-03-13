@@ -18,8 +18,6 @@
 	<httpEndpoint id="defaultHttpEndpoint" host="*"
 		httpPort="9080" httpsPort="9443">
 	</httpEndpoint>
-	<quickStartSecurity userName="${env.USERNAME}"
-		userPassword="${env.PASSWORD}" />
 
 	<opentracingZipkin />
 
@@ -27,4 +25,6 @@
 		location="acmeair-bookingservice-java-2.0.0-SNAPSHOT.war"
 		contextRoot="/" />
 	<cdi12 enableImplicitBeanArchives="false" />
+        <mpJwt id="jwtUserConsumer" keyName="default" audiences="acmeair-ms" issuer="http://acmeair-ms"/>
+        <keyStore id="defaultKeyStore" password="secret" />
 </server>

@@ -18,15 +18,12 @@ package com.acmeair.web;
 
 
 import com.acmeair.service.BookingService;
-import com.acmeair.utils.ConfigPropertyHelper;
-import com.acmeair.utils.RewardTracker;
-import com.acmeair.utils.SecurityUtils;
 
 import java.io.StringReader;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -36,7 +33,6 @@ import javax.json.JsonReaderFactory;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -44,7 +40,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-
+import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.eclipse.microprofile.metrics.annotation.Timed;
 
 
@@ -53,14 +49,13 @@ public class BookingServiceRest {
 
   @Inject
   BookingService bs;
-  
-  @Inject 
-  ConfigPropertyHelper configProperties; 
-  
+
+  @Inject
+  private JsonWebToken jwt;
+
   @Inject 
   RewardTracker rewardTracker; 
 
-  private static final Logger logger = Logger.getLogger(BookingServiceRest.class.getName());
   private static final JsonReaderFactory factory = Json.createReaderFactory(null);  
 
   /**
@@ -70,30 +65,31 @@ public class BookingServiceRest {
   @Consumes({ "application/x-www-form-urlencoded" })
   @Path("/bookflights")
   @Produces("text/plain")
-  @Timed(name = "com.acmeair.web.BookingServiceRest.bookFlights",tags = "app=bookingservice-java") 
+  @Timed(name = "com.acmeair.web.BookingServiceRest.bookFlights",tags = "app=bookingservice-java")
+  @RolesAllowed({"user"})
   public /* BookingInfo */ Response bookFlights(@FormParam("userid") String userid,
       @FormParam("toFlightId") String toFlightId, 
       @FormParam("toFlightSegId") String toFlightSegId,
       @FormParam("retFlightId") String retFlightId, 
       @FormParam("retFlightSegId") String retFlightSegId,
-      @FormParam("oneWayFlight") boolean oneWay, 
-      @HeaderParam("Authorization") String authHeader) {
+      @FormParam("oneWayFlight") boolean oneWay) {
     try {
+
       // make sure the user isn't trying to bookflights for someone else
-      if (!validateJwtForUserCall(userid, authHeader)) {
+      if (!userid.equals(jwt.getSubject())) {
         return Response.status(Response.Status.FORBIDDEN).build();
       }
 
       String bookingIdTo = bs.bookFlight(userid, toFlightSegId, toFlightId);
       rewardTracker.updateRewardMiles(userid, toFlightSegId, true); 
-     
+
       String bookingInfo = "";
       String bookingIdReturn = null;
 
       if (!oneWay) {
         bookingIdReturn = bs.bookFlight(userid, retFlightSegId, retFlightId);        
         rewardTracker.updateRewardMiles(userid, retFlightSegId, true); 
-        
+
         bookingInfo = "{\"oneWay\":false,\"returnBookingId\":\"" 
             + bookingIdReturn + "\",\"departBookingId\":\""
             + bookingIdTo + "\"}";
@@ -115,18 +111,18 @@ public class BookingServiceRest {
   @Produces("text/plain")
   @Timed(name = "com.acmeair.web.BookingServiceRest.getBookingByNumber",
   tags = "app=bookingservice-java") 
+  @RolesAllowed({"user"})
   public Response getBookingByNumber(@PathParam("number") String number, 
-      @PathParam("userid") String userid,
-      @HeaderParam("Authorization") String authHeader) {
+      @PathParam("userid") String userid) {
     try {
       // make sure the user isn't trying to bookflights for someone else
-      if (!validateJwtForUserCall(userid, authHeader)) {
+      if (!userid.equals(jwt.getSubject())) {
         return Response.status(Response.Status.FORBIDDEN).build();
       }
       return Response.ok(bs.getBooking(userid, number)).build();
     } catch (Exception e) {
       e.printStackTrace();
-      return null;
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
   }
 
@@ -138,18 +134,19 @@ public class BookingServiceRest {
   @Produces("text/plain")
   @Timed(name = "com.acmeair.web.bookFlights.BookingServiceRest.getBookingsByUser",
   tags = "app=bookingervice-java")
-  public Response getBookingsByUser(@PathParam("user") String user, 
-      @HeaderParam("Authorization") String authHeader) {
+  @RolesAllowed({"user"})
+  public Response getBookingsByUser(@PathParam("user") String userid) {
 
     try {  
       // make sure the user isn't trying to bookflights for someone else
-      if (!validateJwtForUserCall(user, authHeader)) {
+      if (!userid.equals(jwt.getSubject())) {
         return Response.status(Response.Status.FORBIDDEN).build();
       }
-      return Response.ok(bs.getBookingsByUser(user).toString()).build();
+
+      return Response.ok(bs.getBookingsByUser(userid).toString()).build();
     } catch (Exception e) {
       e.printStackTrace();
-      return null;
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
   }
 
@@ -162,35 +159,23 @@ public class BookingServiceRest {
   @Produces("text/plain")
   @Timed(name = "com.acmeair.web.bookFlights.BookingServiceRest.cancelBookingsByNumber",
   tags = "app=bookingervice-java")
+  @RolesAllowed({"user"})
   public Response cancelBookingsByNumber(@FormParam("number") String number, 
-      @FormParam("userid") String userid,
-      @HeaderParam("Authorization") String authHeader) {
+      @FormParam("userid") String userid) {
     try {
       // make sure the user isn't trying to bookflights for someone else
-      if (!validateJwtForUserCall(userid, authHeader)) {
+      if (!userid.equals(jwt.getSubject())) {
         return Response.status(Response.Status.FORBIDDEN).build();
-      }
+      }      
+      JsonReader jsonReader = factory.createReader(new StringReader(bs
+          .getBooking(userid, number)));
+      JsonObject booking = jsonReader.readObject();
+      jsonReader.close();
 
-      if (configProperties.trackRewardMiles()) {
-        try {
-          JsonReader jsonReader = factory.createReader(new StringReader(bs
-              .getBooking(userid, number)));
-          JsonObject booking = jsonReader.readObject();
-          jsonReader.close();
+      bs.cancelBooking(userid, number);
+      rewardTracker.updateRewardMiles(userid, booking.getString("flightSegmentId"), false);
 
-          bs.cancelBooking(userid, number);
-          rewardTracker.updateRewardMiles(userid, booking.getString("flightSegmentId"), false);
-        } catch (RuntimeException re) {
-          // booking does not exist
-          if (logger.isLoggable(Level.FINE)) {
-            logger.fine("booking : This booking does not exist: " + number);
-          }
-        }
-      } else {
-        bs.cancelBooking(userid, number);
-      }
       return Response.ok("booking " + number + " deleted.").build();
-
     } catch (Exception e) {
       e.printStackTrace();
       return Response.status(Status.INTERNAL_SERVER_ERROR).build();
@@ -201,15 +186,4 @@ public class BookingServiceRest {
   public Response status() {
     return Response.ok("OK").build();
   }
-
-  
-  
-  private boolean validateJwtForUserCall(String user, String authHeader) {
-    if (!configProperties.secureUserCalls()) {
-      return true;
-    }
-    
-    String jwtToken = authHeader.substring(7);
-    return SecurityUtils.validateJwt(user,jwtToken);
-  }  
 }

@@ -166,13 +166,22 @@ public class BookingServiceRest {
       // make sure the user isn't trying to bookflights for someone else
       if (!userid.equals(jwt.getSubject())) {
         return Response.status(Response.Status.FORBIDDEN).build();
-      }      
-      JsonReader jsonReader = factory.createReader(new StringReader(bs
-          .getBooking(userid, number)));
-      JsonObject booking = jsonReader.readObject();
-      jsonReader.close();
-
-      bs.cancelBooking(userid, number);
+      }   
+      
+      JsonObject booking;
+      
+      try {
+        JsonReader jsonReader = factory.createReader(new StringReader(bs
+            .getBooking(userid, number)));
+        booking = jsonReader.readObject();
+        jsonReader.close();
+      
+        bs.cancelBooking(userid, number);
+      } catch (RuntimeException npe) {
+        // TODO: booking has already been deleted...
+        return Response.ok("booking " + number + " deleted.").build();
+      }
+      
       rewardTracker.updateRewardMiles(userid, booking.getString("flightSegmentId"), false);
 
       return Response.ok("booking " + number + " deleted.").build();

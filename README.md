@@ -17,3 +17,8 @@ See Documentation for the [Main Service](https://github.com/blueperf/acmeair-mai
 ## IBM Container Instructions
 
 See Documentation for the [Main Service](https://github.com/blueperf/acmeair-mainservice-java)
+
+
+## Istio Instructions
+
+See Documentation for the [Main Service](https://github.com/blueperf/acmeair-mainservice-java)

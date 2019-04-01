@@ -25,5 +25,4 @@
 
         <mpJwt id="jwtUserConsumer" keyName="default" audiences="acmeair-ms" issuer="http://acmeair-ms"/>
         <keyStore id="defaultKeyStore" password="secret" location="/config/resources/security/key.jks"/>
-        <authentication id="Basic" cacheEnabled="false" />
 </server>

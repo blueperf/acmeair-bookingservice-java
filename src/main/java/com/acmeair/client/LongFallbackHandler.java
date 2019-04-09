@@ -13,21 +13,25 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *******************************************************************************/
+package com.acmeair.client;
 
-package com.acmeair.faultTolerance;
 
-/**
- * @author jagraj
- *
- */
-public class ConnectException extends Exception{
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 2263099077380260488L;
+import java.util.logging.Logger;
 
-	public ConnectException(String message){
-		super(message);
-	}
+import javax.enterprise.context.Dependent;
+
+import org.eclipse.microprofile.faulttolerance.ExecutionContext;
+import org.eclipse.microprofile.faulttolerance.FallbackHandler;
+
+@Dependent
+public class LongFallbackHandler implements FallbackHandler<MilesResponse> {
+  protected static Logger logger =  Logger.getLogger(LongFallbackHandler.class.getName());
+
+
+  @Override
+  public MilesResponse handle(ExecutionContext context) {
+    System.out.println("Client Call Failed - check connection to Customer or Flight Service.");
+    logger.info("fallback for " + context.getMethod().getName());		
+    return null;
+  }
 }

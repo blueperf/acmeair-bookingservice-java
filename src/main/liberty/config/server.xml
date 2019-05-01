@@ -11,15 +11,15 @@
     <feature>websocket-1.1</feature>
   </featureManager>
 
-	<!-- To access this server from a remote client add a host attribute to 
-		the following element, e.g. host="*" -->
-	<httpEndpoint id="defaultHttpEndpoint" host="*"
+  <!-- To access this server from a remote client add a host attribute to the following element, e.g. host="*" -->
+  <httpEndpoint id="defaultHttpEndpoint" host="*"
 		httpPort="9080" httpsPort="9443">
-	</httpEndpoint>
+  </httpEndpoint>
 
-	<opentracingZipkin />
+  <opentracingZipkin />
 
-	<webApplication name="acmeair-bookingservice"
-		location="acmeair-bookingservice-java-2.0.0-SNAPSHOT.war"
-		contextRoot="/" />
+  <webApplication name="acmeair-bookingservice" location="acmeair-bookingservice-java-2.0.0-SNAPSHOT.war" contextRoot="/">
+    <!-- enable visibility to third party apis -->
+    <classloader apiTypeVisibility="api,ibm-api,spec,stable,third-party"/>
+  </webApplication>
 </server>

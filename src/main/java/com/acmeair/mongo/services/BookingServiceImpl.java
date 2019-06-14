@@ -46,7 +46,7 @@ public class BookingServiceImpl implements BookingService, MongoConstants {
 
   private static final  Logger logger = Logger.getLogger(BookingService.class.getName());
 
-  private MongoCollection<Document> booking;
+  private MongoCollection<Document> bookingCollection;
 
   @Inject
   Tracer configuredTracer;
@@ -60,7 +60,7 @@ public class BookingServiceImpl implements BookingService, MongoConstants {
   @PostConstruct
   public void initialization() {
     MongoDatabase database = connectionManager.getDb();
-    booking = database.getCollection("booking");
+    bookingCollection = database.getCollection("booking");
   }
   
   /**
@@ -77,7 +77,7 @@ public class BookingServiceImpl implements BookingService, MongoConstants {
           .append("flightId", flightId)
           .append("dateOfBooking", new Date());
 
-      booking.insertOne(bookingDoc);
+      bookingCollection.insertOne(bookingDoc);
 
       return bookingId;
     } catch (Exception e) {
@@ -108,7 +108,7 @@ public class BookingServiceImpl implements BookingService, MongoConstants {
         Span childSpan = spanBuilder.startManual();
         childSpan.setTag("Created", true);
         
-        booking.insertOne(bookingDoc);
+        bookingCollection.insertOne(bookingDoc);
         
         childSpan.finish();
 
@@ -123,7 +123,7 @@ public class BookingServiceImpl implements BookingService, MongoConstants {
   @Override
   public String getBooking(String user, String bookingId) {
     try {
-      return booking.find(eq("_id", bookingId)).first().toJson();
+      return bookingCollection.find(eq("_id", bookingId)).first().toJson();
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -135,7 +135,7 @@ public class BookingServiceImpl implements BookingService, MongoConstants {
     if (logger.isLoggable(Level.FINE)) {
       logger.fine("getBookingsByUser : " + user);
     }
-    try (MongoCursor<Document> cursor = booking.find(eq("customerId", user)).iterator()) {
+    try (MongoCursor<Document> cursor = bookingCollection.find(eq("customerId", user)).iterator()) {
 
       while (cursor.hasNext()) {
         Document tempBookings = cursor.next();
@@ -161,7 +161,7 @@ public class BookingServiceImpl implements BookingService, MongoConstants {
       logger.fine("cancelBooking _id : " + bookingId);
     }
     try {
-      booking.deleteMany(eq("_id", bookingId));
+      bookingCollection.deleteMany(eq("_id", bookingId));
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -169,16 +169,21 @@ public class BookingServiceImpl implements BookingService, MongoConstants {
 
   @Override
   public Long count() {
-    return booking.count();
+    return bookingCollection.countDocuments();
   }
 
   @Override
   public void dropBookings() {
-    booking.deleteMany(new Document());
+    bookingCollection.deleteMany(new Document());
   }
 
   @Override
   public String getServiceType() {
     return "mongo";
+  }
+  
+  @Override
+  public boolean isConnected() {
+    return (bookingCollection.countDocuments() >= 0);
   }
 }

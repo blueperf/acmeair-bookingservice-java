@@ -6,7 +6,7 @@ RUN wget -t 10 -x -nd -P /opt/ibm/wlp/usr https://github.com/WASdev/sample.opent
 COPY src/main/liberty/config/server.xml /config/server.xml
 RUN sed -i 's/contextRoot=\"\/\"/contextRoot=\"\/booking\"/g' /config/server.xml
 COPY /src/main/liberty/config/jvm.options.base /config/jvm.options
-COPY /target/acmeair-bookingservice-java-2.0.0-SNAPSHOT.war /config/apps/
+COPY /target/acmeair-bookingservice-java-3.0.0-SNAPSHOT.war /config/apps/
 
 
 # Don't fail on rc 22 feature already installed

@@ -8,7 +8,7 @@ RUN wget -t 10 -x -nd -P /opt/ibm/wlp/usr https://github.com/WASdev/sample.opent
 COPY --chown=1001:0 /target/liberty/wlp/usr/servers/defaultServer /config/
 COPY --chown=1001:0 src/main/liberty/config/server.xml /config/server.xml
 COPY --chown=1001:0 /src/main/liberty/config/jvmbx.options /config/jvm.options
-COPY --chown=1001:0 target/acmeair-bookingservice-java-2.0.0-SNAPSHOT.war /config/apps/
+COPY --chown=1001:0 target/acmeair-bookingservice-java-3.0.0-SNAPSHOT.war /config/apps/
 
 # Don't fail on rc 22 feature already installed
 RUN installUtility install --acceptLicense apmDataCollector-7.4 && installUtility install --acceptLicense defaultServer || if [ $? -ne 22 ]; then exit $?; fi

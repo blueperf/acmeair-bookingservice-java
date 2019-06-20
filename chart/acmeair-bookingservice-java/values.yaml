@@ -317,7 +317,7 @@ ibm-websphere-liberty:
   ## Environmental variables
   ###############################################################################
   env:
-    jvmArgs: "-Dmp.jwt.verify.publickey.location=http://acmeair-auth-service:9080/getJwk -Dcom.acmeair.client.CustomerClient/mp-rest/url=http://acmeair-customer-service:9080 -Dcom.acmeair.client.FlightClient/mp-rest/url=http://acmeair-flight-service:9080 -DMONGO_HOST=acmeair-bookingservice-java-ibm-mongodb-dev"
+    jvmArgs: "-Dmp.jwt.verify.publickey.location=http://acmeair-auth-service:9080/getJwk -DcustomerClient/mp-rest/url=http://acmeair-customer-service:9080 -DflightClient/mp-rest/url=http://acmeair-flight-service:9080 -DMONGO_HOST=acmeair-bookingservice-java-ibm-mongodb-dev"
 
   ###############################################################################
   ## Session cache

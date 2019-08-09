@@ -27,7 +27,7 @@ spec:
         - name: MONGO_HOST
           value: acmeair-booking-db
         - name: JVM_ARGS
-          value: "-Dcom.acmeair.client.CustomerClient/mp-rest/url=http://acmeair-customer-service:9080 -Dcom.acmeair.client.FlightClient/mp-rest/url=http://acmeair-flight-service:9080 -Dmp.jwt.verify.publickey.location=http://acmeair-auth-service:9080/getJwk"
+          value: "-DcustomerClient/mp-rest/url=http://acmeair-customer-service:9080 -DflightClient/mp-rest/url=http://acmeair-flight-service:9080 -Dmp.jwt.verify.publickey.location=http://acmeair-auth-service:9080/getJwk"
         - name: TRACK_REWARD_MILES
           value: 'true'
         - name: SECURE_SERVICE_CALLS

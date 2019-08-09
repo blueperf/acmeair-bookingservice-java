@@ -36,4 +36,6 @@ public interface BookingService {
   void dropBookings();
 
   String getServiceType();
+
+  boolean isConnected();
 }

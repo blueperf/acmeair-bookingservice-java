@@ -16,25 +16,9 @@
 
 package com.acmeair.web;
 
-import com.acmeair.config.BookingConfiguration;
-import com.acmeair.config.BookingLoaderRest;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
 @ApplicationPath("/")
-
 public class BookingServiceApp extends Application {
-  /**
-   * Set JAXRS Services.
-   */
-  public Set<Class<?>> getClasses() {
-    return new HashSet<Class<?>>(
-        Arrays.asList(BookingServiceRest.class, BookingConfiguration.class, 
-            BookingLoaderRest.class,HealthCheckRest.class));
-  }
 }

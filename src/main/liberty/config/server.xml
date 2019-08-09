@@ -3,7 +3,7 @@
   <!-- Enable features -->
   <featureManager>
     <feature>usr:opentracingZipkin-0.31</feature>
-    <feature>microProfile-2.2</feature>
+    <feature>microProfile-3.0</feature>
     <feature>jndi-1.0</feature>
     <feature>jsp-2.3</feature>
     <feature>servlet-4.0</feature>
@@ -18,7 +18,7 @@
 
   <opentracingZipkin />
 
-  <webApplication name="acmeair-bookingservice" location="acmeair-bookingservice-java-2.0.0-SNAPSHOT.war" contextRoot="/">
+  <webApplication name="acmeair-bookingservice" location="acmeair-bookingservice-java-3.0.0-SNAPSHOT.war" contextRoot="/">
     <!-- enable visibility to third party apis -->
     <classloader apiTypeVisibility="api,ibm-api,spec,stable,third-party"/>
   </webApplication>

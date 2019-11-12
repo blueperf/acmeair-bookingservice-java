@@ -10,10 +10,9 @@
 		httpPort="9080" httpsPort="9443">
   </httpEndpoint>
 
-  <opentracingZipkin />
+  <quickStartSecurity userName="${env.USERNAME}" userPassword="${env.PASSWORD}" />
 
   <webApplication name="acmeair-bookingservice" location="acmeair-bookingservice-java-3.0.war" contextRoot="/booking">
-    <!-- enable visibility to third party apis -->
     <classloader apiTypeVisibility="api,ibm-api,spec,stable,third-party"/>
   </webApplication>
 </server>

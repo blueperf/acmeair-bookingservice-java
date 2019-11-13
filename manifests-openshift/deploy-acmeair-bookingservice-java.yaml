@@ -94,6 +94,11 @@ spec:
       labels:
         name: acmeair-booking-db
     spec:
+      volumes:
+        - name: acmeair-booking-db-1
+          emptyDir: {}
+        - name: acmeair-booking-db-2
+          emptyDir: {}
       containers:
       - image: mongo
         name: acmeair-booking-db
@@ -101,5 +106,10 @@ spec:
         - containerPort: 27017
           protocol: TCP
         resources: {}
+        volumeMounts:
+          - name: acmeair-booking-db-1
+            mountPath: /data/configdb
+          - name: acmeair-booking-db-2
+            mountPath: /data/db
       restartPolicy: Always
 status: {}

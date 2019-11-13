@@ -212,8 +212,8 @@ ibm-open-liberty:
 
   ingress:
     enabled: true
-    rewriteTarget: "/$2"
-    path: "/booking(/|$)(.*)"
+    path: "/booking"
+    rewriteTarget: "/booking"
     host: ""
     secretName: ""
     annotations:

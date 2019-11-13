@@ -11,6 +11,7 @@ ssl:
 ingress:
   enabled: true
   path: "/booking"
+  rewriteTarget: "/booking"
   host: ""
   secretName: ""
   annotations:

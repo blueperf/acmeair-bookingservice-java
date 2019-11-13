@@ -1,9 +1,12 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: acmeair-bookingservice
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      name: acmeair-booking-deployment
   template:
     metadata:
       labels:
@@ -27,7 +30,7 @@ spec:
         - name: MONGO_HOST
           value: acmeair-booking-db
         - name: JVM_ARGS
-          value: "-DcustomerClient/mp-rest/url=http://acmeair-customer-service:9080 -DflightClient/mp-rest/url=http://acmeair-flight-service:9080 -Dmp.jwt.verify.publickey.location=http://acmeair-auth-service:9080/getJwk"
+          value: "-DcustomerClient/mp-rest/url=http://acmeair-customer-service:9080/customer -DflightClient/mp-rest/url=http://acmeair-flight-service:9080/flight -Dmp.jwt.verify.publickey.location=http://acmeair-auth-service:9080/auth/getJwk"
         - name: TRACK_REWARD_MILES
           value: 'true'
         - name: SECURE_SERVICE_CALLS
@@ -36,7 +39,7 @@ spec:
           httpGet:
             path: /health
             port: 9080
-          initialDelaySeconds: 10
+          initialDelaySeconds: 20
           periodSeconds: 5
         livenessProbe:
           httpGet:
@@ -71,23 +74,26 @@ spec:
     protocol: TCP
     targetPort: 27017
   selector:
-    service: acmeair-booking-db
+    name: acmeair-booking-db
 status:
   loadBalancer: {}
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   creationTimestamp: null
   name: acmeair-booking-db
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      name: acmeair-booking-db
   strategy: {}
   template:
     metadata:
       creationTimestamp: null
       labels:
-        service: acmeair-booking-db
+        name: acmeair-booking-db
     spec:
       containers:
       - image: mongo

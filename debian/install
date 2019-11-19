@@ -1,3 +1,0 @@
-target/liberty/wlp/usr/servers/defaultServer/acmeairbookingservicejava.zip	usr/src/acmeairbookingservicejava
-terraform/scripts/install.sh	usr/src/acmeairbookingservicejava
-terraform/scripts/start.sh		usr/src/acmeairbookingservicejava

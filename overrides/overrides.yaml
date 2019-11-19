@@ -10,8 +10,8 @@ ssl:
 
 ingress:
   enabled: true
-  rewriteTarget: "/$2"
-  path: "/booking(/|$)(.*)"
+  path: "/booking"
+  rewriteTarget: "/booking"
   host: ""
   secretName: ""
   annotations:
@@ -21,4 +21,4 @@ ingress:
     ingress.kubernetes.io/connection-proxy-header: "keep-alive"
 
 env:
-  jvmArgs: "-DcustomerClient/mp-rest/url=http://acmeair-customer-service:9080 -DflightClient/mp-rest/url=http://acmeair-flight-service:9080 -DMONGO_HOST=acmeair-booking-db -Dmp.jwt.verify.publickey.location=http://acmeair-auth-service:9080/getJwk"
+  jvmArgs: "-DcustomerClient/mp-rest/url=http://acmeair-customer-service:9080/customer -DflightClient/mp-rest/url=http://acmeair-flight-service:9080/flight -DMONGO_HOST=acmeair-booking-db -Dmp.jwt.verify.publickey.location=http://acmeair-auth-service:9080/auth/getJwk"

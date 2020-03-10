@@ -1,4 +1,4 @@
-ibm-websphere-liberty:
+ibm-open-liberty:
   ###############################################################################
   # Licensed Materials - Property of IBM.
   # Copyright IBM Corporation 2017. All Rights Reserved.
@@ -268,13 +268,13 @@ ibm-websphere-liberty:
   ###############################################################################
   microprofile:
     health:
-      enabled: false
+      enabled: true
 
   ###############################################################################
   ## Monitoring
   ###############################################################################
   monitoring:
-    enabled: false
+    enabled: true
 
   ###############################################################################
   ## Auto scaling
@@ -317,7 +317,7 @@ ibm-websphere-liberty:
   ## Environmental variables
   ###############################################################################
   env:
-    jvmArgs: "-Dmp.jwt.verify.publickey.location=http://acmeair-auth-service:9080/auth/getJwk -DcustomerClient/mp-rest/url=http://acmeair-customer-service:9080/customer -DflightClient/mp-rest/url=http://acmeair-flight-service:9080/flight -DMONGO_HOST=acmeair-bookingservice-java-ibm-mongodb-dev"
+    jvmArgs: "-Dmp.jwt.verify.publickey.location=http://acmeair-auth-service:9080/getJwk -DcustomerClient/mp-rest/url=http://acmeair-customer-service:9080 -DflightClient/mp-rest/url=http://acmeair-flight-service:9080 -DMONGO_HOST=acmeair-bookingservice-java-ibm-mongodb-dev"
 
   ###############################################################################
   ## Session cache

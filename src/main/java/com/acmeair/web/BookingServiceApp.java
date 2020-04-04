@@ -19,6 +19,9 @@ package com.acmeair.web;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
+import org.eclipse.microprofile.auth.LoginConfig;
+
 @ApplicationPath("/")
+@LoginConfig(authMethod = "MP-JWT", realmName = "MP-JWT")
 public class BookingServiceApp extends Application {
 }

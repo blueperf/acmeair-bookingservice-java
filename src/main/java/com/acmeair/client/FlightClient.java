@@ -16,6 +16,7 @@
 
 package com.acmeair.client;
 
+import java.io.IOException;
 import java.time.temporal.ChronoUnit;
 
 
@@ -37,7 +38,8 @@ public interface FlightClient {
   @Path("/getrewardmiles")
   @Consumes({"application/x-www-form-urlencoded"})
   @Produces("application/json")
-  @Retry(maxRetries=3,delayUnit=ChronoUnit.SECONDS,delay=5,durationUnit=ChronoUnit.SECONDS,maxDuration=30)
+  @Retry(maxRetries=3,delayUnit=ChronoUnit.SECONDS,delay=5,durationUnit=ChronoUnit.SECONDS,
+    maxDuration=30, retryOn = Exception.class, abortOn = IOException.class)
   @Fallback(LongFallbackHandler.class)
   public MilesResponse getRewardMiles(@FormParam("flightSegment") String segmentId);
   

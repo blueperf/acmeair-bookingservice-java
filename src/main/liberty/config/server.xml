@@ -10,7 +10,20 @@
 		httpPort="9080" httpsPort="9443">
   </httpEndpoint>
 
-  <quickStartSecurity userName="${env.USERNAME}" userPassword="${env.PASSWORD}" />
+   <basicRegistry id="basic" realm="WebRealm">
+    <user name="${env.USERNAME}" password="${env.PASSWORD}" />
+  </basicRegistry>
+
+  <administrator-role>
+      <user-access-id>user:WebRealm/${env.USERNAME}</user-access-id>
+  </administrator-role>
+
+  <!-- Basic User Registry not to be used on /booking URL requests -->
+  <authFilter id="mpJwtAuthFilter">
+    <requestUrl id="request" urlPattern="/booking" matchType="notContain" />
+  </authFilter>
+
+  <mpJwt id="jwtUserConsumer" authFilterRef="mpJwtAuthFilter" ignoreApplicationAuthMethod="false" mapToUserRegistry="true" />
 
   <webApplication name="acmeair-bookingservice" location="acmeair-bookingservice-java-3.3.war" contextRoot="/booking">
     <classloader apiTypeVisibility="api,ibm-api,spec,stable,third-party"/>

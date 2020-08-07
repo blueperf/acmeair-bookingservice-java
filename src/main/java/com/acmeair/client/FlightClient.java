@@ -40,6 +40,8 @@ public interface FlightClient {
   @Produces("application/json")
   @Retry(maxRetries=3,delayUnit=ChronoUnit.SECONDS,delay=5,durationUnit=ChronoUnit.SECONDS,
     maxDuration=30, retryOn = Exception.class, abortOn = IOException.class)
+  @Timeout(10000) // throws exception after 10000 ms which invokes fallback handler
+  @CircuitBreaker(requestVolumeThreshold=4,failureRatio=0.5,successThreshold=10,delay=1,delayUnit=ChronoUnit.SECONDS)
   @Fallback(LongFallbackHandler.class)
   public MilesResponse getRewardMiles(@FormParam("flightSegment") String segmentId);
   

@@ -15,4 +15,11 @@
   <webApplication name="acmeair-bookingservice" location="acmeair-bookingservice-java-3.3.war" contextRoot="/booking">
     <classloader apiTypeVisibility="api,ibm-api,spec,stable,third-party"/>
   </webApplication>
+	
+  <cors domain="/booking"
+    allowedOrigins="*"
+    allowedMethods="GET, DELETE, POST, OPTIONS"
+    allowedHeaders="*"
+    allowCredentials="true"
+    maxAge="3600" />
 </server>

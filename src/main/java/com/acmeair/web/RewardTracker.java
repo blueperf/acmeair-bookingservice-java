@@ -8,6 +8,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.eclipse.microprofile.faulttolerance.Asynchronous;
+import org.eclipse.microprofile.faulttolerance.Timeout;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import com.acmeair.client.CustomerClient;
@@ -29,6 +30,7 @@ public class RewardTracker {
   private FlightClient flightClient;
     
   //TODO: For now, use the Fault Tolerance to make this done async.
+  @Timeout(500) //throws a timeout exception if method does not return withing 400 ms
   @Asynchronous
   public CompletionStage<Long> updateRewardMiles(String userid, String flightSegId, boolean add) throws InterruptedException  {
     

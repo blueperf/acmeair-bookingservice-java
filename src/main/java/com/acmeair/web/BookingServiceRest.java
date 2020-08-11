@@ -130,7 +130,7 @@ public class BookingServiceRest {
   @Path("/byuser/{user}")
   @Produces("text/plain")
   @SimplyTimed(name = "com.acmeair.web.bookFlights.BookingServiceRest.getBookingsByUser",
-  tags = "app=bookingervice-java")
+  tags = "app=bookingservice-java")
   @RolesAllowed({"user"})
   public Response getBookingsByUser(@PathParam("user") String userid) {
 
@@ -155,7 +155,7 @@ public class BookingServiceRest {
   @Path("/cancelbooking")
   @Produces("text/plain")
   @SimplyTimed(name = "com.acmeair.web.bookFlights.BookingServiceRest.cancelBookingsByNumber",
-  tags = "app=bookingervice-java")
+  tags = "app=bookingservice-java")
   @RolesAllowed({"user"})
   public Response cancelBookingsByNumber(@FormParam("number") String number, 
       @FormParam("userid") String userid) {

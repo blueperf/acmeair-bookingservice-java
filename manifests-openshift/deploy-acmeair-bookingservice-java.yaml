@@ -29,12 +29,12 @@ spec:
           value: password
         - name: MONGO_HOST
           value: acmeair-booking-db
-        - name: JVM_ARGS
-          value: "-DcustomerClient/mp-rest/url=http://acmeair-customer-service:9080/customer -DflightClient/mp-rest/url=http://acmeair-flight-service:9080/flight -Dmp.jwt.verify.publickey.location=http://acmeair-auth-service:9080/auth/getJwk"
-        - name: TRACK_REWARD_MILES
-          value: 'true'
-        - name: SECURE_SERVICE_CALLS
-          value: 'true'
+        - name: ACMEAIR_STACKAA_AUTH_URL
+          value: "http://acmeair-auth-service:9080/auth"
+        - name: ACMEAIR_STACKAA_CUSTOMER_URL
+          value: "http://acmeair-customer-service:9080/customer"
+        - name: ACMEAIR_STACKAA_FLIGHT_URL
+          value: "http://acmeair-flight-service:9080/flight"
         readinessProbe:
           httpGet:
             path: /health

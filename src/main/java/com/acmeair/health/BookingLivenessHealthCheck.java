@@ -52,15 +52,14 @@ public class BookingLivenessHealthCheck implements HealthCheck {
   }
 
   private boolean isServiceReachable() {
+	Client client = ClientBuilder.newClient();
     try {
-      Client client = ClientBuilder.newClient();
-      client
-      .target("http://" + hostname + ":" + port + "/")
-      .request();
-
+      client.target("http://" + hostname + ":" + port + "/").request();
       return true;
     } catch (Exception ex) {
       return false;
+    } finally {
+    	client.close();
     }
   }
 }

@@ -34,7 +34,7 @@ public class BookingReadinessHealthCheck implements HealthCheck {
 
   public HealthCheckResponse call() {
    
-    HealthCheckResponseBuilder builder = HealthCheckResponse.named("FlightServiceReadinessCheck");
+    HealthCheckResponseBuilder builder = HealthCheckResponse.named("BookingServiceReadinessCheck");
     
     if (bookingService.isConnected()) {
       builder = builder.up();

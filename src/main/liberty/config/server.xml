@@ -8,9 +8,28 @@
   <!-- To access this server from a remote client add a host attribute to the following element, e.g. host="*" -->
   <httpEndpoint id="defaultHttpEndpoint" host="*"
 		httpPort="9080" httpsPort="9443">
+    <accessLogging
+      filepath="${server.output.dir}/logs/http_defaultEndpoint_access.log"
+      logFormat='%h %u %t "%r" %s %b %D %{User-agent}i'>
+    </accessLogging>
   </httpEndpoint>
 
-  <quickStartSecurity userName="${env.USERNAME}" userPassword="${env.PASSWORD}" />
+  <basicRegistry id="basic" realm="WebRealm">
+    <user name="${env.USERNAME}" password="${env.PASSWORD}" />
+  </basicRegistry>
+
+  <administrator-role>
+      <user-access-id>user:WebRealm/${env.USERNAME}</user-access-id>
+  </administrator-role>
+
+  <!-- Basic User Registry not to be used on /booking URL requests -->
+  <authFilter id="mpJwtAuthFilter">
+    <requestUrl id="request" urlPattern="/booking" matchType="notContain" />
+  </authFilter>
+
+  <mpJwt id="jwtUserConsumer" authFilterRef="mpJwtAuthFilter" ignoreApplicationAuthMethod="false" mapToUserRegistry="true" />
+  
+  <logging consoleFormat="json" consoleSource="message,trace,accessLog,ffdc,audit" messageFormat="json" messageSource="message,trace,accessLog,ffdc,audit" traceSpecification="com.acmeair*=all" />
 
   <webApplication name="acmeair-bookingservice" location="acmeair-bookingservice-java-3.3.war" contextRoot="/booking">
     <classloader apiTypeVisibility="api,ibm-api,spec,stable,third-party"/>

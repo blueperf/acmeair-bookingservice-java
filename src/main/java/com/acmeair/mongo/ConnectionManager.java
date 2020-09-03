@@ -59,7 +59,7 @@ public class ConnectionManager implements MongoConstants {
   private Integer mongoPort;
   
   @Inject 
-  @ConfigProperty(name = "MONGO_DBNAME", defaultValue = "acmeair_flightdb") 
+  @ConfigProperty(name = "MONGO_DBNAME", defaultValue = "acmeair_bookingdb") 
   private String mongoDbName;
   
   @Inject 

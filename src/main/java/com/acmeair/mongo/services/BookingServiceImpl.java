@@ -105,7 +105,7 @@ public class BookingServiceImpl implements BookingService, MongoConstants {
             spanBuilder.asChildOf(activeSpan.context());
         }
         
-        Span childSpan = spanBuilder.startManual();
+        Span childSpan = spanBuilder.start();
         childSpan.setTag("Created", true);
         
         bookingCollection.insertOne(bookingDoc);

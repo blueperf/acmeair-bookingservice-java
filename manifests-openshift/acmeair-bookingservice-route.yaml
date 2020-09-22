@@ -8,3 +8,9 @@ spec:
   to:
     kind: Service
     name: acmeair-booking-service
+  port:
+    targetPort: 9080
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  wildcardPolicy: None

@@ -1,0 +1,24 @@
+services:
+  - docker
+
+language: java
+
+jdk:
+  - openjdk8
+
+before_install:
+  - export BUILD_TOOL="docker"
+  - export IMAGE_PREFIX="quay.io/powercloud"
+  - export ACME_SERVICE_NAME="acmeair-bookingservice-java"
+  - export ACME_VERSION="1.0"
+  - sudo apt-get update
+  - sudo apt-get -y install maven
+
+script:
+  - mvn clean package
+  - ${BUILD_TOOL} login ${IMAGE_PREFIX} -u "${ROBOT_USER}" -p "${ROBOT_TOKEN}"
+  - ${BUILD_TOOL} build --pull -t ${IMAGE_PREFIX}/${ACME_SERVICE_NAME}:${ACME_VERSION} --no-cache .
+  - ${BUILD_TOOL} push ${IMAGE_PREFIX}/${ACME_SERVICE_NAME}:${ACME_VERSION}
+
+arch:
+  - ppc64le

@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: acmeair-bookingservice-java
-        image: acmeair-bookingservice-java:latest
+        image: quay.io/powercloud/acmeair-bookingservice-java:1.0
         ports:
           - containerPort: 9080
           - containerPort: 9443
@@ -100,7 +100,7 @@ spec:
         - name: acmeair-booking-db-2
           emptyDir: {}
       containers:
-      - image: mongo
+      - image: ibmcom/icp-mongodb-ppc64le:4.0.12 
         name: acmeair-booking-db
         ports:
         - containerPort: 27017

@@ -3,6 +3,7 @@
   <!-- Enable features -->
   <featureManager>
     <feature>microProfile-4.0</feature>
+    <feature>mpRestClient-2.0</feature>
   </featureManager>
 
   <!-- To access this server from a remote client add a host attribute to the following element, e.g. host="*" -->
@@ -30,7 +31,7 @@
 
   <mpJwt id="jwtUserConsumer" authFilterRef="mpJwtAuthFilter" ignoreApplicationAuthMethod="false" mapToUserRegistry="true" />
   
-  <logging consoleFormat="json" consoleSource="message,trace,accessLog,ffdc,audit" messageFormat="json" messageSource="message,trace,accessLog,ffdc,audit" traceSpecification="${env.TRACE_SPEC}" />
+  <!--<logging consoleFormat="json" consoleSource="message,trace,accessLog,ffdc,audit" messageFormat="json" messageSource="message,trace,accessLog,ffdc,audit" traceSpecification="${env.TRACE_SPEC}" />-->
 
   <webApplication name="acmeair-bookingservice" location="acmeair-bookingservice-java-4.0.war" contextRoot="/booking">
     <classloader apiTypeVisibility="api,ibm-api,spec,stable,third-party"/>

@@ -31,7 +31,7 @@
 
   <mpJwt id="jwtUserConsumer" authFilterRef="mpJwtAuthFilter" ignoreApplicationAuthMethod="false" mapToUserRegistry="true" />
   
-  <!--<logging consoleFormat="json" consoleSource="message,trace,accessLog,ffdc,audit" messageFormat="json" messageSource="message,trace,accessLog,ffdc,audit" traceSpecification="${env.TRACE_SPEC}" />-->
+  <logging consoleFormat="json" consoleSource="message,trace,accessLog,ffdc,audit" messageFormat="json" messageSource="message,trace,accessLog,ffdc,audit" traceSpecification="${env.TRACE_SPEC}" />
 
   <webApplication name="acmeair-bookingservice" location="acmeair-bookingservice-java-4.0.war" contextRoot="/booking">
     <classloader apiTypeVisibility="api,ibm-api,spec,stable,third-party"/>

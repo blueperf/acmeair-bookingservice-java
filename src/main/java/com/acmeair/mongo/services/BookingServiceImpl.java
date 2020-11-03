@@ -19,7 +19,6 @@ package com.acmeair.mongo.services;
 import static com.mongodb.client.model.Filters.eq;
 
 import com.acmeair.mongo.ConnectionManager;
-import com.acmeair.mongo.MongoConstants;
 import com.acmeair.service.BookingService;
 import com.acmeair.service.KeyGenerator;
 import com.mongodb.client.MongoCollection;
@@ -42,7 +41,7 @@ import org.eclipse.microprofile.opentracing.Traced;
 import io.opentracing.Span;
 import io.opentracing.Tracer;
 
-public class BookingServiceImpl implements BookingService, MongoConstants {
+public class BookingServiceImpl implements BookingService {
 
   private static final  Logger logger = Logger.getLogger(BookingService.class.getName());
 

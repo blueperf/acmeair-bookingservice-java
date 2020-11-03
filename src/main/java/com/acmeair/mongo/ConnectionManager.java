@@ -1,18 +1,18 @@
 /*******************************************************************************
-* Copyright (c) 2017 IBM Corp.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*******************************************************************************/
+ * Copyright (c) 2017 IBM Corp.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
 
 package com.acmeair.mongo;
 
@@ -24,8 +24,6 @@ import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoDatabase;
 
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -38,74 +36,23 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonReaderFactory;
 
+import org.eclipse.microprofile.config.inject.ConfigProperties;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @ApplicationScoped
-public class ConnectionManager implements MongoConstants {
- 
-  private static final JsonReaderFactory factory = Json.createReaderFactory(null);
+public class ConnectionManager {
 
+  private static final JsonReaderFactory factory = Json.createReaderFactory(null);
   private static final Logger logger = Logger.getLogger(ConnectionManager.class.getName());
 
   protected MongoClient mongoClient;
-  protected MongoDatabase db;
-    
+  protected MongoClientURI mongoUri = null;
+  protected MongoDatabase db; 
+
   @Inject 
-  @ConfigProperty(name = "MONGO_HOST", defaultValue = "localhost") 
-  private String mongoHost;
-  
-  @Inject 
-  @ConfigProperty(name = "MONGO_PORT", defaultValue = "27017") 
-  private Integer mongoPort;
-  
-  @Inject 
-  @ConfigProperty(name = "MONGO_DBNAME", defaultValue = "acmeair_bookingdb") 
-  private String mongoDbName;
-  
-  @Inject 
-  @ConfigProperty(name = "MONGO_USERNAME") 
-  private Optional<String> mongoUsername;
-  
-  @Inject 
-  @ConfigProperty(name = "MONGO_PASSWORD") 
-  private Optional<String> mongoPassword;
-    
-  @Inject 
-  @ConfigProperty(name = "MONGO_SSL_ENABLED") 
-  private Optional<Boolean> mongoSslEnabled;
-  
-  @Inject 
-  @ConfigProperty(name = "MONGO_MIN_CONNECTIONS_PER_HOST") 
-  private Optional<Integer> mongoMinConnectionsPerHost;
-  
-  @Inject 
-  @ConfigProperty(name = "MONGO_CONNECTIONS_PER_HOST") 
-  private Optional<Integer> mongoConnectionsPerHost;
-  
-  @Inject 
-  @ConfigProperty(name = "MONGO_MAX_WAIT_TIME") 
-  private Optional<Integer> mongoMaxWaitTime;
-  
-  @Inject 
-  @ConfigProperty(name = "MONGO_CONNECT_TIME_OUT") 
-  private Optional<Integer> mongoConnectTimeOut;
-  
-  @Inject 
-  @ConfigProperty(name = "MONGO_SOCKET_TIME_OUT") 
-  private Optional<Integer> mongoSocketTimeOut;
-  
-  @Inject 
-  @ConfigProperty(name = "MONGO_THREADS_ALLOWED_TO_BLOCK_FOR_CONNECTION_MULTIPLIER") 
-  private Optional<Integer> mongoThreadsAllowedToBlockForConnectionMultiplier;
-  
-  @Inject 
-  @ConfigProperty(name = "MONGO_MAX_CONNECTION_IDLE_TIME") 
-  private Optional<Integer> mongoMaxConnectionIdleTime;
-  
-  @Inject 
-  @ConfigProperty(name = "MONGO_SOCKET_KEEPALIVE") 
-  private Optional<Boolean> mongoSocketKeepalive;
-  
+  @ConfigProperties
+  MongoProperties mongoProps; 
+
   @Inject 
   @ConfigProperty(name = "VCAP_SERVICES") 
   Optional<String> vcapJsonString;
@@ -116,37 +63,34 @@ public class ConnectionManager implements MongoConstants {
     ServerAddress dbAddress = null;
     MongoClientOptions.Builder options = new MongoClientOptions.Builder();
 
-    if (mongoConnectionsPerHost.isPresent()) {
-      options.connectionsPerHost(mongoConnectionsPerHost.get());
+    if (mongoProps.connectionsPerHost.isPresent()) {
+      options.connectionsPerHost(mongoProps.connectionsPerHost.get());
     }
-    if (mongoMinConnectionsPerHost.isPresent()) {
-      options.minConnectionsPerHost(mongoMinConnectionsPerHost.get());
+    if (mongoProps.minConnectionsPerHost.isPresent()) {
+      options.minConnectionsPerHost(mongoProps.minConnectionsPerHost.get());
     }
-    if (mongoMaxWaitTime.isPresent()) {
-      options.maxWaitTime(mongoMaxWaitTime.get());
+    if (mongoProps.maxWaitTime.isPresent()) {
+      options.maxWaitTime(mongoProps.maxWaitTime.get());
     }
-    if (mongoConnectTimeOut.isPresent()) {
-      options.connectTimeout(mongoConnectTimeOut.get());
+    if (mongoProps.connectTimeOut.isPresent()) {
+      options.connectTimeout(mongoProps.connectTimeOut.get());
     }
-    if (mongoSocketTimeOut.isPresent()) {
-      options.socketTimeout(mongoSocketTimeOut.get());
+    if (mongoProps.socketTimeOut.isPresent()) {
+      options.socketTimeout(mongoProps.socketTimeOut.get());
     }
-    if (mongoSocketKeepalive.isPresent()) {
-      options.socketKeepAlive(mongoSocketKeepalive.get());
+    if (mongoProps.sslEnabled.isPresent()) {
+      options.sslEnabled(mongoProps.sslEnabled.get());
     }
-    if (mongoSslEnabled.isPresent()) {
-      options.sslEnabled(mongoSslEnabled.get());
-    }
-    if (mongoThreadsAllowedToBlockForConnectionMultiplier.isPresent()) {
+    if (mongoProps.threadsAllowedToBlockForConnectionMultiplier.isPresent()) {
       options.threadsAllowedToBlockForConnectionMultiplier(
-          mongoThreadsAllowedToBlockForConnectionMultiplier.get());
+          mongoProps.threadsAllowedToBlockForConnectionMultiplier.get());
     }
-    if (mongoMaxConnectionIdleTime.isPresent()) {
-      options.maxConnectionIdleTime(mongoMaxConnectionIdleTime.get());
+    if (mongoProps.maxConnectionIdleTime.isPresent()) {
+      options.maxConnectionIdleTime(mongoProps.maxConnectionIdleTime.get());
     }
 
     MongoClientOptions builtOptions = options.build();
-    
+
     try {
       // Check if VCAP_SERVICES exist, and if it does, look up the url from the
       // credentials.
@@ -174,58 +118,57 @@ public class ConnectionManager implements MongoConstants {
         if (mongoServiceArray == null) {
           logger.info(
               "VCAP_SERVICES existed, but a MongoLAB or MongoDB by COMPOST service was "
-              + "not definied. Trying DB resource");
+                  + "not definied. Trying DB resource");
           // VCAP_SERVICES don't exist, so use the DB resource
-          dbAddress = new ServerAddress(mongoHost, mongoPort);
+          dbAddress = new ServerAddress(mongoProps.host, mongoProps.port);
 
           // If username & password exists, connect DB with username & password
-          if ((!mongoUsername.isPresent()) || (!mongoPassword.isPresent())) {
+          if ((!mongoProps.username.isPresent()) || (!mongoProps.password.isPresent())) {
             mongoClient = new MongoClient(dbAddress, builtOptions);
           } else {
-            List<MongoCredential> credentials = new ArrayList<>();
-            credentials.add(MongoCredential
-                .createCredential(mongoUsername.get(), mongoDbName, 
-                    mongoPassword.get().toCharArray()));
-            mongoClient = new MongoClient(dbAddress, credentials, builtOptions);
+            MongoCredential credential = MongoCredential
+                .createCredential(mongoProps.username.get(), mongoProps.dbName, 
+                    mongoProps.password.get().toCharArray());
+            mongoClient = new MongoClient(dbAddress, credential, builtOptions);
           }
         } else {
           JsonObject mongoService = (JsonObject) mongoServiceArray.get(0);
           JsonObject credentials = (JsonObject) mongoService.get("credentials");
           String url = (String) credentials.getString("url");
           logger.fine("service url = " + url);
-          MongoClientURI mongoUri = new MongoClientURI(url, options);
+          mongoUri = new MongoClientURI(url, options);
           mongoClient = new MongoClient(mongoUri);
-          mongoDbName = mongoUri.getDatabase();
-
         }
       } else {
 
         // VCAP_SERVICES don't exist, so use the DB resource
-        dbAddress = new ServerAddress(mongoHost, mongoPort);
+        dbAddress = new ServerAddress(mongoProps.host, mongoProps.port);
 
         // If username & password exists, connect DB with username & password
-        if ((!mongoUsername.isPresent()) || (!mongoPassword.isPresent())) {
+        if ((!mongoProps.username.isPresent()) || (!mongoProps.password.isPresent())) {
           mongoClient = new MongoClient(dbAddress, builtOptions);
         } else {
-          List<MongoCredential> credentials = new ArrayList<>();
-          credentials.add(MongoCredential
-              .createCredential(mongoUsername.get(), mongoDbName, 
-                  mongoPassword.get().toCharArray()));
-          mongoClient = new MongoClient(dbAddress, credentials, builtOptions);
+          MongoCredential credential = MongoCredential
+              .createCredential(mongoProps.username.get(), mongoProps.dbName, 
+                  mongoProps.password.get().toCharArray());
+          mongoClient = new MongoClient(dbAddress, credential, builtOptions);
         }
       }
 
-      db = mongoClient.getDatabase(mongoDbName);
-      logger.info("#### Mongo DB Server " + mongoClient.getAddress().getHost() + " ####");
-      logger.info("#### Mongo DB Port " + mongoClient.getAddress().getPort() + " ####");
-      logger.info("#### Mongo DB is created with DB name " + mongoDbName + " ####");
+      db = mongoClient.getDatabase(mongoProps.dbName);
+      if (mongoUri == null) {
+        logger.info("#### Mongo DB Server " + mongoProps.host + " ####");
+        logger.info("#### Mongo DB Port " + mongoProps.port + " ####");
+        logger.info("#### Mongo DB is created with DB name " + mongoProps.dbName + " ####");
+      } else {
+        logger.info("#### Mongo URI is" + mongoUri.getURI() + " ####");
+      }
       logger.info("#### MongoClient Options ####");
       logger.info("maxConnectionsPerHost : " + builtOptions.getConnectionsPerHost());
       logger.info("minConnectionsPerHost : " + builtOptions.getMinConnectionsPerHost());
       logger.info("maxWaitTime : " + builtOptions.getMaxWaitTime());
       logger.info("connectTimeout : " + builtOptions.getConnectTimeout());
       logger.info("socketTimeout : " + builtOptions.getSocketTimeout());
-      logger.info("socketKeepAlive : " + builtOptions.isSocketKeepAlive());
       logger.info("sslEnabled : " + builtOptions.isSslEnabled());
       logger.info("threadsAllowedToBlockForConnectionMultiplier : "
           + builtOptions.getThreadsAllowedToBlockForConnectionMultiplier());

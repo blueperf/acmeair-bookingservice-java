@@ -45,6 +45,8 @@ spec:
           value: 'false'
         - name: TRACE_SPEC
           value: '*=info'
+        - name: LOGGING_FORMAT
+          value: 'simple'
         readinessProbe:
           httpGet:
             path: /health

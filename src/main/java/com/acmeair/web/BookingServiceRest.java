@@ -175,7 +175,7 @@ public class BookingServiceRest {
       
         bs.cancelBooking(userid, number);
       } catch (RuntimeException npe) {
-        // TODO: booking has already been deleted...
+        // Booking has already been deleted...
         return Response.ok("booking " + number + " deleted.").build();
       }
       

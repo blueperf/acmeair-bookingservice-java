@@ -99,30 +99,7 @@ public class BookingServiceRest {
       return Response.status(Status.INTERNAL_SERVER_ERROR).build();
     }
   }
-
-  /**
-   * Get Booking by Number.
-   */
-  @GET
-  @Path("/bybookingnumber/{userid}/{number}")
-  @Produces("text/plain")
-  @SimplyTimed(name = "com.acmeair.web.BookingServiceRest.getBookingByNumber",
-  tags = "app=bookingservice-java") 
-  @RolesAllowed({"user"})
-  public Response getBookingByNumber(@PathParam("number") String number, 
-      @PathParam("userid") String userid) {
-    try {
-      // make sure the user isn't trying to bookflights for someone else
-      if (!userid.equals(jwt.getSubject())) {
-        return Response.status(Response.Status.FORBIDDEN).build();
-      }
-      return Response.ok(bs.getBooking(userid, number)).build();
-    } catch (Exception e) {
-      e.printStackTrace();
-      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-    }
-  }
-
+  
   /**
    * Get bookins for a customer.
    */

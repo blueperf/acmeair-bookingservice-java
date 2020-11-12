@@ -43,10 +43,9 @@
                       <param>-DcustomerClient/mp-rest/url=http://localhost:9082/customer</param>
                       <param>-DflightClient/mp-rest/url=http://localhost:9082/flight</param>
                       <param>-Dmp.jwt.verify.publickey.location=http://localhost:9082/auth/getJWK</param>
-                      <param>-DDISABLE_REWARD_TRACKING=true</param>
                     </jvmOptions>
                     <install>
-                      <runtimeUrl>https://public.dhe.ibm.com/ibmdl/export/pub/software/openliberty/runtime/nightly/2020-11-02_1100/openliberty-all-20.0.0.12-cl201220201102-1100.zip</runtimeUrl>
+                      <runtimeUrl>https://public.dhe.ibm.com/ibmdl/export/pub/software/openliberty/runtime/nightly/2020-11-10_1100/openliberty-all-20.0.0.12-cl201220201110-1100.zip</runtimeUrl>
                     </install>
                 </configuration>
          </plugin>

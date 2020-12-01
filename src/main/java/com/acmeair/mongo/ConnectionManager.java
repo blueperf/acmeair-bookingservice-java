@@ -127,7 +127,7 @@ public class ConnectionManager {
             mongoClient = new MongoClient(dbAddress, builtOptions);
           } else {
             MongoCredential credential = MongoCredential
-                .createCredential(mongoProps.username.get(), mongoProps.dbName, 
+                .createCredential(mongoProps.username.get(), mongoProps.database, 
                     mongoProps.password.get().toCharArray());
             mongoClient = new MongoClient(dbAddress, credential, builtOptions);
           }
@@ -149,18 +149,20 @@ public class ConnectionManager {
           mongoClient = new MongoClient(dbAddress, builtOptions);
         } else {
           MongoCredential credential = MongoCredential
-              .createCredential(mongoProps.username.get(), mongoProps.dbName, 
+              .createCredential(mongoProps.username.get(), mongoProps.database, 
                   mongoProps.password.get().toCharArray());
           mongoClient = new MongoClient(dbAddress, credential, builtOptions);
         }
       }
 
-      db = mongoClient.getDatabase(mongoProps.dbName);
+      
       if (mongoUri == null) {
+        db = mongoClient.getDatabase(mongoProps.database);
         logger.info("#### Mongo DB Server " + mongoProps.host + " ####");
         logger.info("#### Mongo DB Port " + mongoProps.port + " ####");
-        logger.info("#### Mongo DB is created with DB name " + mongoProps.dbName + " ####");
+        logger.info("#### Mongo DB is created with DB name " + mongoProps.database + " ####");
       } else {
+        db = mongoClient.getDatabase(mongoUri.getDatabase());
         logger.info("#### Mongo URI is" + mongoUri.getURI() + " ####");
       }
       logger.info("#### MongoClient Options ####");

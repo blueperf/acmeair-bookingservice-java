@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   annotations:
@@ -12,7 +12,10 @@ spec:
   - host:
     http:
       paths:
-      - path: /booking
+      - pathType: Prefix
+        path: /booking
         backend:
-          serviceName: acmeair-booking-service
-          servicePort: 9080
+          service: 
+            name: acmeair-booking-service
+            port: 
+              number: 9080

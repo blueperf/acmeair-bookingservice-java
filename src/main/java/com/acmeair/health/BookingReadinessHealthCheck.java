@@ -22,10 +22,12 @@ import org.eclipse.microprofile.health.HealthCheck;
 import org.eclipse.microprofile.health.HealthCheckResponse;
 import org.eclipse.microprofile.health.HealthCheckResponseBuilder;
 import org.eclipse.microprofile.health.Readiness;
+import org.eclipse.microprofile.health.Startup;
 
 import com.acmeair.service.BookingService;
 
 @Readiness
+@Startup
 @ApplicationScoped
 public class BookingReadinessHealthCheck implements HealthCheck {
   

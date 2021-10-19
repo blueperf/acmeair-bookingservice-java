@@ -19,7 +19,7 @@ package com.acmeair.loader;
 import com.acmeair.service.BookingService;
 
 import java.util.logging.Logger;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 
 public class BookingLoader {

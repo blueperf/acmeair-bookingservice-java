@@ -2,7 +2,7 @@ package com.acmeair.mongo;
 
 import java.util.Optional;
 
-import javax.enterprise.context.Dependent;
+import jakarta.enterprise.context.Dependent;
 
 import org.eclipse.microprofile.config.inject.ConfigProperties;
 

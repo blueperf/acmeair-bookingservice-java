@@ -17,6 +17,8 @@
       logFormat='%h %u %t "%r" %s %b %D %{User-agent}i'>
     </accessLogging>
   </httpEndpoint>
+  
+  <authentication id="Basic" cacheEnabled="false" />
 
   <basicRegistry id="basic" realm="WebRealm">
     <user name="${env.USERNAME}" password="${env.PASSWORD}" />

@@ -18,7 +18,7 @@
     </accessLogging>
   </httpEndpoint>
   
-  <authentication id="Basic" cacheEnabled="false" />
+  <monitor filter="REST" />
 
   <basicRegistry id="basic" realm="WebRealm">
     <user name="${env.USERNAME}" password="${env.PASSWORD}" />

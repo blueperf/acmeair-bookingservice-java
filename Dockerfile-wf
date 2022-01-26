@@ -13,7 +13,7 @@ COPY target/acmeair-bookingservice-java-4.1.war /opt/jboss/wildfly/standalone/de
 RUN sed -i 's/<level name="INFO"/<level name="WARN"/' /opt/jboss/wildfly/standalone/configuration/standalone-microprofile.xml
 
 USER 0
-RUN chown jboss:0 /opt/jboss/wildfly/standalone/deployments/acmeair-bookingservice-java-4.1.war
+RUN chown jboss:0 /opt/jboss/wildfly/standalone/deployments/acmeair-bookingservice-java-5.0.war
 USER jboss
 
 CMD ["/opt/jboss/wildfly/bin/standalone.sh", "-c","standalone-microprofile.xml","-b", "0.0.0.0", "-bmanagement", "0.0.0.0","-Djboss.http.port=9080"]

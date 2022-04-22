@@ -15,22 +15,20 @@
 *******************************************************************************/
 package com.acmeair.client;
 
-
 import java.util.logging.Logger;
 
-import jakarta.enterprise.context.Dependent;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import org.eclipse.microprofile.faulttolerance.ExecutionContext;
 import org.eclipse.microprofile.faulttolerance.FallbackHandler;
 
-@Dependent
-public class LongFallbackHandler implements FallbackHandler<MilesResponse> {
-  protected static Logger logger =  Logger.getLogger(LongFallbackHandler.class.getName());
-
+@ApplicationScoped
+public class CustomerFallbackHandler implements FallbackHandler<MilesResponse> {
+  protected static Logger logger =  Logger.getLogger(CustomerFallbackHandler.class.getName());
 
   @Override
   public MilesResponse handle(ExecutionContext context) {
-    System.out.println("Client Call Failed - check connection to Customer or Flight Service.");
+    System.out.println("Customer Call Failed - check connection to Customer Service.");
     logger.info("fallback for " + context.getMethod().getName());		
     return null;
   }

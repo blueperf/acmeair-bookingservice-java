@@ -169,4 +169,28 @@ public class BookingServiceRest {
   public Response status() {
     return Response.ok("OK").build();
   }
+
+  @GET
+  @Path("/rewards/customerfailures")
+  public Response customerFailures() {
+    return Response.ok(rewardTracker.getCustomerFailures()).build();
+  }
+
+  @GET
+  @Path("/rewards/flightfailures")
+  public Response flightFailures() {
+    return Response.ok(rewardTracker.getFlightFailures()).build();
+  }
+
+  @GET
+  @Path("/rewards/customersuccesses")
+  public Response customerSucceses() {
+    return Response.ok(rewardTracker.getCustomerSuccesses()).build();
+  }
+
+  @GET
+  @Path("/rewards/flightsuccesses")
+  public Response flightSuccesseses() {
+    return Response.ok(rewardTracker.getFlightSucesses()).build();
+  }
 }

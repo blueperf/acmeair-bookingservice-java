@@ -32,23 +32,17 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 import org.bson.Document;
 
-import org.eclipse.microprofile.opentracing.Traced;
-
-import io.opentracing.Span;
-import io.opentracing.Tracer;
-
+@ApplicationScoped
 public class BookingServiceImpl implements BookingService {
 
   private static final  Logger logger = Logger.getLogger(BookingService.class.getName());
 
   private MongoCollection<Document> bookingCollection;
-
-  @Inject
-  Tracer configuredTracer;
 
   @Inject
   KeyGenerator keyGenerator;
@@ -65,7 +59,6 @@ public class BookingServiceImpl implements BookingService {
   /**
    * Book Flight.
    */
-  @Traced
   public String bookFlight(String customerId, String flightId) {
     try {
 
@@ -97,19 +90,8 @@ public class BookingServiceImpl implements BookingService {
         Document bookingDoc = new Document("_id", bookingId).append("customerId", customerId)
             .append("flightId", flightId).append("dateOfBooking", new Date())
             .append("flightSegmentId", flightSegmentId);
-
-        Span activeSpan = configuredTracer.activeSpan();
-        Tracer.SpanBuilder spanBuilder = configuredTracer.buildSpan("Created bookFlight Span");
-        if (activeSpan != null) {
-            spanBuilder.asChildOf(activeSpan.context());
-        }
-        
-        Span childSpan = spanBuilder.start();
-        childSpan.setTag("Created", true);
         
         bookingCollection.insertOne(bookingDoc);
-        
-        childSpan.finish();
 
         return bookingId;
       } catch (Exception e) {
@@ -154,7 +136,6 @@ public class BookingServiceImpl implements BookingService {
   }
 
   @Override
-  @Traced
   public void cancelBooking(String user, String bookingId) {
     if (logger.isLoggable(Level.FINE)) {
       logger.fine("cancelBooking _id : " + bookingId);

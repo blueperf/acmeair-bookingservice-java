@@ -19,9 +19,11 @@ package com.acmeair.loader;
 import com.acmeair.service.BookingService;
 
 import java.util.logging.Logger;
+
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
-
+@ApplicationScoped
 public class BookingLoader {
 
   @Inject

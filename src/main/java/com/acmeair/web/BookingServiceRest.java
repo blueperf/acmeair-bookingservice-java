@@ -22,6 +22,7 @@ import com.acmeair.service.BookingService;
 import java.io.StringReader;
 
 import jakarta.annotation.security.RolesAllowed;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
@@ -42,6 +43,7 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.eclipse.microprofile.metrics.annotation.Timed;
 
 @Path("/")
+@ApplicationScoped
 public class BookingServiceRest {
 
   @Inject

@@ -1,7 +1,10 @@
-FROM open-liberty:full
+FROM icr.io/appcafe/open-liberty:kernel-slim-java11-openj9-ubi
 
 # Config
 COPY --chown=1001:0 src/main/liberty/config/server.xml /config/server.xml
+
+RUN features.sh
+
 COPY --chown=1001:0 src/main/liberty/config/server.env /config/server.env
 COPY --chown=1001:0 src/main/liberty/config/jvm.options /config/jvm.options
 COPY --chown=1001:0 src/main/liberty/config/bootstrap.properties /config/bootstrap.properties

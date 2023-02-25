@@ -1,0 +1,15 @@
+#mp.jwt.verify.publickey.location: /META-INF/publicKey.pem
+#mp.jwt.verify.issuer: http://acmeair-ms
+
+security:
+  providers:
+    - mp-jwt-auth:
+        atn-token:
+        sign-token:
+          outbound:
+tracing:
+    service: "helidon-service"
+    log-spans: false
+    sampler-param: 1
+    sampler-type: const
+    

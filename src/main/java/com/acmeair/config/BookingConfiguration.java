@@ -20,6 +20,7 @@ import com.acmeair.service.BookingService;
 
 import java.util.logging.Logger;
 
+import jakarta.annotation.security.PermitAll;
 import jakarta.inject.Inject;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -30,6 +31,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Response;
 
 @Path("/config")
+@PermitAll
 public class BookingConfiguration {
 
   Logger logger = Logger.getLogger(BookingConfiguration.class.getName());

@@ -32,6 +32,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 import org.bson.Document;
@@ -41,6 +42,7 @@ import org.eclipse.microprofile.opentracing.Traced;
 import io.opentracing.Span;
 import io.opentracing.Tracer;
 
+@ApplicationScoped
 public class BookingServiceImpl implements BookingService {
 
   private static final  Logger logger = Logger.getLogger(BookingService.class.getName());
@@ -48,7 +50,7 @@ public class BookingServiceImpl implements BookingService {
   private MongoCollection<Document> bookingCollection;
 
   @Inject
-  Tracer configuredTracer;
+  io.opentracing.Tracer configuredTracer;
 
   @Inject
   KeyGenerator keyGenerator;
@@ -85,6 +87,7 @@ public class BookingServiceImpl implements BookingService {
   }
 
   @Override
+  @Traced
   public String bookFlight(String customerId, String flightSegmentId, String flightId) {
     if (flightSegmentId == null) {
       return bookFlight(customerId, flightId);
@@ -99,6 +102,7 @@ public class BookingServiceImpl implements BookingService {
             .append("flightSegmentId", flightSegmentId);
 
         Span activeSpan = configuredTracer.activeSpan();
+        //System.out.println("activeSpan: " + activeSpan);
         Tracer.SpanBuilder spanBuilder = configuredTracer.buildSpan("Created bookFlight Span");
         if (activeSpan != null) {
             spanBuilder.asChildOf(activeSpan.context());
@@ -120,6 +124,7 @@ public class BookingServiceImpl implements BookingService {
   }
 
   @Override
+  @Traced
   public String getBooking(String user, String bookingId) {
     try {
       return bookingCollection.find(eq("_id", bookingId)).first().toJson();
@@ -129,6 +134,7 @@ public class BookingServiceImpl implements BookingService {
   }
 
   @Override
+  @Traced
   public List<String> getBookingsByUser(String user) {
     List<String> bookings = new ArrayList<String>();
     if (logger.isLoggable(Level.FINE)) {

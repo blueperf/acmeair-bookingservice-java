@@ -20,21 +20,6 @@
   
   <monitor  filter="REST"/>
     
-  <basicRegistry id="basic" realm="WebRealm">
-    <user name="${env.USERNAME}" password="${env.PASSWORD}" />
-  </basicRegistry>
-
-  <administrator-role>
-    <user-access-id>user:WebRealm/${env.USERNAME}</user-access-id>
-  </administrator-role>
-
-  <!-- Basic User Registry not to be used on /booking URL requests -->
-  <authFilter id="mpJwtAuthFilter">
-    <requestUrl id="request" urlPattern="/booking" matchType="notContain" />
-  </authFilter>
-
-  <mpJwt id="jwtUserConsumer" authFilterRef="mpJwtAuthFilter" ignoreApplicationAuthMethod="false" mapToUserRegistry="true" />
-
   <logging 
     consoleFormat="${LOGGING_FORMAT}" 
     consoleSource="message,trace,accessLog,ffdc,audit" 
@@ -42,17 +27,10 @@
     messageSource="message,trace,accessLog,ffdc,audit" 
     traceSpecification="${TRACE_SPEC}" />
 
-  <webApplication name="acmeair-bookingservice" location="acmeair-bookingservice-java-5.0.war" contextRoot="/booking">
+  <webApplication name="acmeair-bookingservice" location="acmeair-bookingservice-java-5.0.war" contextRoot="/">
     <classloader apiTypeVisibility="api,ibm-api,spec,stable,third-party" />
   </webApplication>
 
   <keyStore id="defaultKeyStore" password="secret" />
 
-  <cors 
-    domain="/booking" 
-    allowedOrigins="*" 
-    allowedMethods="GET, DELETE, POST, OPTIONS" 
-    allowedHeaders="*" 
-    allowCredentials="true" 
-    maxAge="3600" />
 </server>

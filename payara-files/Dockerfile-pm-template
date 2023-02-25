@@ -1,0 +1,20 @@
+FROM payara/micro
+
+COPY target/microprofile-primitives.war ${DEPLOY_DIR}/
+COPY payara-files/post-boot /opt/payara/
+COPY payara-files/jaeger-tracer-lib-1.1-SNAPSHOT-jar-with-dependencies.jar /opt/payara/
+COPY payara-files/slf4j-jdk14-1.6.1.jar /opt/payara
+
+ENV JAEGER_SERVICE_NAME=jaeger
+ENV JAEGER_AGENT_HOST=jaeger
+ENV JAEGER_SERVICE_NAME=mpprims
+ENV JAEGER_REPORTER_LOG_SPANS=false
+ENV JAEGER_SAMPLER_TYPE=const
+ENV JAEGER_SAMPLER_PARAM=1
+
+ENTRYPOINT ["java", "-Dcom.mpprims.restclient.RestClientService/mp-rest/url=http://%hostname%:9081/","-Dcom.mpprims.restclient.faulttolerance.FTRestClientService/mp-rest/url=http://%hostname%:9081/","-XX:+UseContainerSupport", "-XX:MaxRAMPercentage=90.0", "-jar", "payara-micro.jar","--contextroot", "/","--port","9080"] 
+CMD ["--deploymentDir", "/opt/payara/deployments","--postbootcommandfile" ,"post-boot" ]
+
+
+
+

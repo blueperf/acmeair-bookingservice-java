@@ -23,10 +23,10 @@ public class RewardTracker {
   BookingService bs;
 
   @Inject @RestClient
-  private CustomerClient customerClient;
+  CustomerClient customerClient;
 
   @Inject @RestClient
-  private FlightClient flightClient;
+  FlightClient flightClient;
 
   private AtomicLong customerSuccesses = new AtomicLong(0);
   private AtomicLong flightSuccesses = new AtomicLong(0);

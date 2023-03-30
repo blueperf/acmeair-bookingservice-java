@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 IBM Corp.
+ * Copyright (c) 2013, 2023 IBM Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.eclipse.microprofile.metrics.annotation.Timed;
 
@@ -50,10 +51,18 @@ public class BookingServiceRest {
   BookingService bs;
 
   @Inject
-  private JsonWebToken jwt;
+  JsonWebToken jwt;
 
-  @Inject 
+  @Inject
   RewardTracker rewardTracker; 
+
+  @Inject
+  @ConfigProperty(name = "TARGET_BOOKINGS_FOR_AUDIT", defaultValue = "4000")
+  Integer TARGET_BOOKINGS_FOR_AUDIT;
+
+  @Inject
+  @ConfigProperty(name = "TOLERANCE_FOR_AUDIT", defaultValue = "200")
+  Integer TOLERANCE_FOR_AUDIT;
 
   private static final JsonReaderFactory factory = Json.createReaderFactory(null);  
 
@@ -192,5 +201,21 @@ public class BookingServiceRest {
   @Path("/rewards/flightsuccesses")
   public Response flightSuccesseses() {
     return Response.ok(rewardTracker.getFlightSucesses()).build();
+  }
+
+  @GET
+  @Path("/audit")
+  public Response audit() {
+
+    int minBookingCount = TARGET_BOOKINGS_FOR_AUDIT - TOLERANCE_FOR_AUDIT;
+    int maxBookingCount = TARGET_BOOKINGS_FOR_AUDIT + TOLERANCE_FOR_AUDIT;
+
+    if (rewardTracker.getCustomerFailures() == 0 &&  rewardTracker.getFlightFailures() == 0 &&
+        rewardTracker.getCustomerSuccesses() > 0 &&  rewardTracker.getFlightSucesses() > 0  &&
+        bs.count() > minBookingCount && bs.count() < maxBookingCount) {
+      return Response.ok("pass").build();
+    }
+
+    return Response.ok("fail").build();
   }
 }

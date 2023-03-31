@@ -58,7 +58,7 @@ public class ConnectionManager {
   Optional<String> vcapJsonString;
 
   @PostConstruct
-  private void initialize() {     
+  void initialize() {
 
     ServerAddress dbAddress = null;
     MongoClientOptions.Builder options = new MongoClientOptions.Builder();

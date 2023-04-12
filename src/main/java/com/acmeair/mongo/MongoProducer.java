@@ -26,8 +26,8 @@ import org.eclipse.microprofile.config.inject.ConfigProperties;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Disposes;
+import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.Produces;
 
 @ApplicationScoped
 public class MongoProducer {

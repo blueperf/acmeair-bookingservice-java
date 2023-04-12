@@ -18,7 +18,6 @@ package com.acmeair.mongo.services;
 
 import static com.mongodb.client.model.Filters.eq;
 
-import com.acmeair.mongo.ConnectionManager;
 import com.acmeair.service.BookingService;
 import com.acmeair.service.KeyGenerator;
 import com.mongodb.client.MongoCollection;
@@ -52,8 +51,8 @@ public class BookingServiceImpl implements BookingService {
   @Inject
   KeyGenerator keyGenerator;
 
-  @Inject 
-  ConnectionManager connectionManager;
+  @Inject
+  MongoDatabase database;
 
   @Inject
   Tracer tracer;
@@ -67,7 +66,6 @@ public class BookingServiceImpl implements BookingService {
 
   @PostConstruct
   public void initialization() {
-    MongoDatabase database = connectionManager.getDb();
     bookingCollection = database.getCollection("booking");
   }
   

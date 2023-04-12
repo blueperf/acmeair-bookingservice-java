@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 IBM Corp.
+ * Copyright (c) 2013, 2023 IBM Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import com.acmeair.service.BookingService;
 import java.io.StringReader;
 
 import jakarta.annotation.security.RolesAllowed;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
@@ -38,20 +39,30 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.jwt.JsonWebToken;
-import org.eclipse.microprofile.metrics.annotation.SimplyTimed;
+import org.eclipse.microprofile.metrics.annotation.Timed;
 
 @Path("/")
+@ApplicationScoped
 public class BookingServiceRest {
 
   @Inject
   BookingService bs;
 
   @Inject
-  private JsonWebToken jwt;
+  JsonWebToken jwt;
 
-  @Inject 
+  @Inject
   RewardTracker rewardTracker; 
+
+  @Inject
+  @ConfigProperty(name = "TARGET_BOOKINGS_FOR_AUDIT", defaultValue = "4000")
+  Integer TARGET_BOOKINGS_FOR_AUDIT;
+
+  @Inject
+  @ConfigProperty(name = "TOLERANCE_FOR_AUDIT", defaultValue = "200")
+  Integer TOLERANCE_FOR_AUDIT;
 
   private static final JsonReaderFactory factory = Json.createReaderFactory(null);  
 
@@ -62,7 +73,7 @@ public class BookingServiceRest {
   @Consumes({ "application/x-www-form-urlencoded" })
   @Path("/bookflights")
   @Produces("text/plain")
-  @SimplyTimed(name = "com.acmeair.web.BookingServiceRest.bookFlights",tags = "app=bookingservice-java")
+  @Timed(name = "com.acmeair.web.BookingServiceRest.bookFlights", tags = "app=bookingservice-java")
   @RolesAllowed({"user"})
   public /* BookingInfo */ Response bookFlights(@FormParam("userid") String userid,
       @FormParam("toFlightId") String toFlightId, 
@@ -106,8 +117,7 @@ public class BookingServiceRest {
   @GET
   @Path("/byuser/{user}")
   @Produces("text/plain")
-  @SimplyTimed(name = "com.acmeair.web.bookFlights.BookingServiceRest.getBookingsByUser",
-  tags = "app=bookingservice-java")
+  @Timed(name = "com.acmeair.web.bookFlights.BookingServiceRest.getBookingsByUser", tags = "app=bookingservice-java")
   @RolesAllowed({"user"})
   public Response getBookingsByUser(@PathParam("user") String userid) {
 
@@ -131,8 +141,7 @@ public class BookingServiceRest {
   @Consumes({ "application/x-www-form-urlencoded" })
   @Path("/cancelbooking")
   @Produces("text/plain")
-  @SimplyTimed(name = "com.acmeair.web.bookFlights.BookingServiceRest.cancelBookingsByNumber",
-  tags = "app=bookingservice-java")
+  @Timed(name = "com.acmeair.web.bookFlights.BookingServiceRest.cancelBookingsByNumber", tags = "app=bookingservice-java")
   @RolesAllowed({"user"})
   public Response cancelBookingsByNumber(@FormParam("number") String number, 
       @FormParam("userid") String userid) {
@@ -192,5 +201,21 @@ public class BookingServiceRest {
   @Path("/rewards/flightsuccesses")
   public Response flightSuccesseses() {
     return Response.ok(rewardTracker.getFlightSucesses()).build();
+  }
+
+  @GET
+  @Path("/audit")
+  public Response audit() {
+
+    int minBookingCount = TARGET_BOOKINGS_FOR_AUDIT - TOLERANCE_FOR_AUDIT;
+    int maxBookingCount = TARGET_BOOKINGS_FOR_AUDIT + TOLERANCE_FOR_AUDIT;
+
+    if (rewardTracker.getCustomerFailures() == 0 &&  rewardTracker.getFlightFailures() == 0 &&
+        rewardTracker.getCustomerSuccesses() > 0 &&  rewardTracker.getFlightSucesses() > 0  &&
+        bs.count() > minBookingCount && bs.count() < maxBookingCount) {
+      return Response.ok("pass").build();
+    }
+
+    return Response.ok("fail").build();
   }
 }

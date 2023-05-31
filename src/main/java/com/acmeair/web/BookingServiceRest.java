@@ -175,6 +175,7 @@ public class BookingServiceRest {
   }
 
   @GET
+  @Path("/status")
   public Response status() {
     return Response.ok("OK").build();
   }

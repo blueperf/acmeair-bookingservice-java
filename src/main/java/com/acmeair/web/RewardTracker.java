@@ -34,7 +34,7 @@ public class RewardTracker {
   private AtomicLong flightFailures = new AtomicLong(0);
     
   //TODO: For now, use the Fault Tolerance to make this done async.
-  @Timeout(500) //throws a timeout exception if method does not return withing 400 ms
+  @Timeout(1000) //throws a timeout exception if method does not return withing 1s
   @Asynchronous
   public CompletionStage<Long> updateRewardMiles(String userid, String flightSegId, boolean add) throws InterruptedException  {
         

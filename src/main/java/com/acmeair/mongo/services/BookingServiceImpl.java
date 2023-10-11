@@ -24,8 +24,8 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 
-import io.opentelemetry.api.trace.Span;
-import io.opentelemetry.api.trace.Tracer;
+//import io.opentelemetry.api.trace.Span;
+//import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Context;
 
 import java.util.ArrayList;
@@ -54,11 +54,11 @@ public class BookingServiceImpl implements BookingService {
   @Inject
   MongoDatabase database;
 
-  @Inject
-  Tracer tracer;
+  //@Inject
+  //Tracer tracer;
 
-  @Inject
-  Span activeSpan;
+  //@Inject
+  //Span activeSpan;
 
   @Inject
   @ConfigProperty(name = "TRACE_EXTRA_SPAN", defaultValue = "true")
@@ -104,17 +104,17 @@ public class BookingServiceImpl implements BookingService {
             .append("flightId", flightId).append("dateOfBooking", new Date())
             .append("flightSegmentId", flightSegmentId);
         
-        if (TRACE_EXTRA_SPAN) {
+        /*if (TRACE_EXTRA_SPAN) {
           Span childSpan = tracer.spanBuilder("Created bookFlight Span")
             .setParent(Context.current().with(activeSpan))
             .startSpan();
 
           childSpan.setAttribute("Created", true);
           bookingCollection.insertOne(bookingDoc);
-          childSpan.end();
-        } else {
-          bookingCollection.insertOne(bookingDoc);
-        }
+          childSpan.end();*/
+        //} else {
+        bookingCollection.insertOne(bookingDoc);
+        //}
 
         return bookingId;
       } catch (Exception e) {

@@ -2,5 +2,5 @@ FROM payara/micro
 
 COPY target/acmeair-bookingservice-java-6.1.war ${DEPLOY_DIR}/
 
-ENTRYPOINT ["java","-XX:+UseContainerSupport", "-XX:MaxRAMPercentage=90.0","-jar", "payara-micro.jar","--contextroot", "/booking","--port","9080"]
+ENTRYPOINT ["java","-XX:+UseContainerSupport", "-XX:MaxRAMPercentage=90.0","-jar", "payara-micro.jar","--contextroot", "/","--port","9080"]
 CMD ["--deploymentDir", "/opt/payara/deployments"]

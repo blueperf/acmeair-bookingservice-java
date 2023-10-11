@@ -22,6 +22,7 @@ import com.acmeair.service.BookingService;
 import java.io.StringReader;
 
 import jakarta.annotation.security.RolesAllowed;
+import jakarta.annotation.security.PermitAll;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.json.Json;
@@ -42,7 +43,7 @@ import jakarta.ws.rs.core.Response.Status;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
-@Path("/")
+@Path("/booking")
 @ApplicationScoped
 public class BookingServiceRest {
 
@@ -171,36 +172,42 @@ public class BookingServiceRest {
   }
 
   @GET
+  @PermitAll
   @Path("/status")
   public Response status() {
     return Response.ok("OK").build();
   }
 
   @GET
+  @PermitAll
   @Path("/rewards/customerfailures")
   public Response customerFailures() {
     return Response.ok(rewardTracker.getCustomerFailures()).build();
   }
 
   @GET
+  @PermitAll
   @Path("/rewards/flightfailures")
   public Response flightFailures() {
     return Response.ok(rewardTracker.getFlightFailures()).build();
   }
 
   @GET
+  @PermitAll
   @Path("/rewards/customersuccesses")
   public Response customerSucceses() {
     return Response.ok(rewardTracker.getCustomerSuccesses()).build();
   }
 
   @GET
+  @PermitAll
   @Path("/rewards/flightsuccesses")
   public Response flightSuccesseses() {
     return Response.ok(rewardTracker.getFlightSucesses()).build();
   }
 
   @GET
+  @PermitAll
   @Path("/audit")
   public Response audit() {
 

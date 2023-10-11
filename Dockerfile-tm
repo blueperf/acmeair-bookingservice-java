@@ -1,0 +1,12 @@
+FROM tomee:9-jre17-microprofile
+
+RUN rm -rf /usr/local/tomee/webapps/*
+COPY target/acmeair-bookingservice-java-6.1.war /usr/local/tomee/webapps/ROOT.war
+ENV JAVA_OPTS="-Dhttp.keepalive=true -Dhttp.maxConnections=100 -Dcom.acmeair.client.CustomerClient/mp-rest/url=http://acmeair-nginx1/customer -Dcom.acmeair.client.FlightClient/mp-rest/url=http://acmeair-nginx1/flight"
+RUN sed -i "s/8080/9080/g" conf/server.xml
+
+ENV JAEGER_ENABLEMENT=true
+ENV JAEGER_AGENT_HOST=jaeger
+ENV JAEGER_REPORTER_LOG_SPANS=true
+ENV JAEGER_SAMPLER_TYPE=const
+ENV JAEGER_SAMPLER_PARAM=1

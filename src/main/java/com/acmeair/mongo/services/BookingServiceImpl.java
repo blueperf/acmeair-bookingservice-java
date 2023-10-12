@@ -91,7 +91,7 @@ public class BookingServiceImpl implements BookingService {
   }
 
   @Override
-  public String bookFlight(String customerId, String flightSegmentId, String flightId) {
+  public String bookFlight(String customerId, String flightSegmentId, String flightId, int miles) {
     if (flightSegmentId == null) {
       return bookFlight(customerId, flightId);
     } else {
@@ -102,7 +102,8 @@ public class BookingServiceImpl implements BookingService {
 
         Document bookingDoc = new Document("_id", bookingId).append("customerId", customerId)
             .append("flightId", flightId).append("dateOfBooking", new Date())
-            .append("flightSegmentId", flightSegmentId);
+            .append("flightSegmentId", flightSegmentId)
+            .append("miles", miles);
         
         if (TRACE_EXTRA_SPAN) {
           Span childSpan = tracer.spanBuilder("Created bookFlight Span")

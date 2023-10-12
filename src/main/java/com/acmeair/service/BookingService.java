@@ -23,7 +23,7 @@ public interface BookingService {
   // String bookFlight(String customerId, FlightPK flightId);
   // String bookFlight(String customerId, String flightId);
 
-  String bookFlight(String customerId, String flightSegmentId, String flightId);
+  String bookFlight(String customerId, String flightSegmentId, String flightId, int miles);
 
   String getBooking(String user, String id);
 

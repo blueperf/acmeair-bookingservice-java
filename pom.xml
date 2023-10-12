@@ -139,6 +139,11 @@
       <scope>compile</scope>
       <version>3.12.13</version>
     </dependency>
+    <dependency>
+      <groupId>org.eclipse.microprofile.reactive.messaging</groupId>
+      <artifactId>microprofile-reactive-messaging-api</artifactId>
+      <version>3.0</version>
+    </dependency>
     <!-- For tests -->
     <dependency>
       <groupId>junit</groupId>

@@ -76,8 +76,10 @@ public class BookingServiceRest {
   public /* BookingInfo */ Response bookFlights(@FormParam("userid") String userid,
       @FormParam("toFlightId") String toFlightId, 
       @FormParam("toFlightSegId") String toFlightSegId,
+      @FormParam("toFlightMiles") int toFlightMiles,
       @FormParam("retFlightId") String retFlightId, 
       @FormParam("retFlightSegId") String retFlightSegId,
+      @FormParam("retFlightMiles") int retFlightMiles,
       @FormParam("oneWayFlight") boolean oneWay) {
     try {
 
@@ -86,15 +88,15 @@ public class BookingServiceRest {
         return Response.status(Response.Status.FORBIDDEN).build();
       }
 
-      String bookingIdTo = bs.bookFlight(userid, toFlightSegId, toFlightId);
-      rewardTracker.updateRewardMiles(userid, toFlightSegId, true); 
+      String bookingIdTo = bs.bookFlight(userid, toFlightSegId, toFlightId, toFlightMiles);
+      rewardTracker.updateRewardMiles(userid, toFlightMiles); 
 
       String bookingInfo = "";
       String bookingIdReturn = null;
 
       if (!oneWay) {
-        bookingIdReturn = bs.bookFlight(userid, retFlightSegId, retFlightId);        
-        rewardTracker.updateRewardMiles(userid, retFlightSegId, true); 
+        bookingIdReturn = bs.bookFlight(userid, retFlightSegId, retFlightId, retFlightMiles);        
+        rewardTracker.updateRewardMiles(userid, retFlightMiles); 
 
         bookingInfo = "{\"oneWay\":false,\"returnBookingId\":\"" 
             + bookingIdReturn + "\",\"departBookingId\":\""
@@ -139,7 +141,8 @@ public class BookingServiceRest {
   @Path("/cancelbooking")
   @Produces("text/plain")
   @RolesAllowed({"user"})
-  public Response cancelBookingsByNumber(@FormParam("number") String number, 
+  public Response cancelBookingsByNumber(
+      @FormParam("number") String number, 
       @FormParam("userid") String userid) {
     try {
       // make sure the user isn't trying to bookflights for someone else
@@ -161,8 +164,8 @@ public class BookingServiceRest {
         return Response.ok("booking " + number + " deleted.").build();
       }
       
-      rewardTracker.updateRewardMiles(userid, booking.getString("flightSegmentId"), false);
-
+      rewardTracker.updateRewardMiles(userid, booking.getInt("miles") * -1);
+      
       return Response.ok("booking " + number + " deleted.").build();
     } catch (Exception e) {
       e.printStackTrace();
@@ -174,45 +177,5 @@ public class BookingServiceRest {
   @Path("/status")
   public Response status() {
     return Response.ok("OK").build();
-  }
-
-  @GET
-  @Path("/rewards/customerfailures")
-  public Response customerFailures() {
-    return Response.ok(rewardTracker.getCustomerFailures()).build();
-  }
-
-  @GET
-  @Path("/rewards/flightfailures")
-  public Response flightFailures() {
-    return Response.ok(rewardTracker.getFlightFailures()).build();
-  }
-
-  @GET
-  @Path("/rewards/customersuccesses")
-  public Response customerSucceses() {
-    return Response.ok(rewardTracker.getCustomerSuccesses()).build();
-  }
-
-  @GET
-  @Path("/rewards/flightsuccesses")
-  public Response flightSuccesseses() {
-    return Response.ok(rewardTracker.getFlightSucesses()).build();
-  }
-
-  @GET
-  @Path("/audit")
-  public Response audit() {
-
-    int minBookingCount = TARGET_BOOKINGS_FOR_AUDIT - TOLERANCE_FOR_AUDIT;
-    int maxBookingCount = TARGET_BOOKINGS_FOR_AUDIT + TOLERANCE_FOR_AUDIT;
-
-    if (rewardTracker.getCustomerFailures() == 0 &&  rewardTracker.getFlightFailures() == 0 &&
-        rewardTracker.getCustomerSuccesses() > 0 &&  rewardTracker.getFlightSucesses() > 0  &&
-        bs.count() > minBookingCount && bs.count() < maxBookingCount) {
-      return Response.ok("pass").build();
-    }
-
-    return Response.ok("fail").build();
   }
 }

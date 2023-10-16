@@ -60,14 +60,14 @@ public class MilesUpdate {
     return "MilesUpdate: " + jsonb.toJson(this);
   }
 
-  public static class SystemLoadSerializer implements Serializer<Object> {
+  public static class MilesUpdateSerializer implements Serializer<Object> {
     @Override
     public byte[] serialize(String topic, Object data) {
       return jsonb.toJson(data).getBytes();
     }
   }
 
-  public static class SystemLoadDeserializer implements Deserializer<MilesUpdate> {
+  public static class MilesUpdateDeserializer implements Deserializer<MilesUpdate> {
     @Override
     public MilesUpdate deserialize(String topic, byte[] data) {
       if (data == null)

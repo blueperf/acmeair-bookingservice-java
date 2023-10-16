@@ -13,7 +13,6 @@ public class RewardTracker {
   private Emitter<String> emitter;
     
   public void updateRewardMiles(String userId, int miles) throws InterruptedException  {
-    System.out.println("updateRewardMiles: userId" + userId + ", miles: " + miles );
     emitter.send(userId + ":" + miles);
   }
    

@@ -178,4 +178,11 @@ public class BookingServiceRest {
   public Response status() {
     return Response.ok("OK").build();
   }
+
+  @GET
+  @Path("/rewardRequestsSent")
+  @Produces("application/json")
+  public Response rewardRequestsSent() {
+    return Response.ok(rewardTracker.getRewardRequestsSent()).build();
+  }
 }

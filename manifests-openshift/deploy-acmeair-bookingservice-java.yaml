@@ -100,7 +100,7 @@ spec:
         - name: acmeair-booking-db-2
           emptyDir: {}
       containers:
-      - image: mongo
+      - image: docker.io/library/mongo:latest
         name: acmeair-booking-db
         ports:
         - containerPort: 27017

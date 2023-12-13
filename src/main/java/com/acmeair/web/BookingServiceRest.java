@@ -41,7 +41,6 @@ import jakarta.ws.rs.core.Response.Status;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.jwt.JsonWebToken;
-import org.eclipse.microprofile.metrics.annotation.Timed;
 
 @Path("/")
 @ApplicationScoped
@@ -73,7 +72,6 @@ public class BookingServiceRest {
   @Consumes({ "application/x-www-form-urlencoded" })
   @Path("/bookflights")
   @Produces("text/plain")
-  @Timed(name = "com.acmeair.web.BookingServiceRest.bookFlights", tags = "app=bookingservice-java")
   @RolesAllowed({"user"})
   public /* BookingInfo */ Response bookFlights(@FormParam("userid") String userid,
       @FormParam("toFlightId") String toFlightId, 
@@ -117,7 +115,6 @@ public class BookingServiceRest {
   @GET
   @Path("/byuser/{user}")
   @Produces("text/plain")
-  @Timed(name = "com.acmeair.web.bookFlights.BookingServiceRest.getBookingsByUser", tags = "app=bookingservice-java")
   @RolesAllowed({"user"})
   public Response getBookingsByUser(@PathParam("user") String userid) {
 
@@ -141,7 +138,6 @@ public class BookingServiceRest {
   @Consumes({ "application/x-www-form-urlencoded" })
   @Path("/cancelbooking")
   @Produces("text/plain")
-  @Timed(name = "com.acmeair.web.bookFlights.BookingServiceRest.cancelBookingsByNumber", tags = "app=bookingservice-java")
   @RolesAllowed({"user"})
   public Response cancelBookingsByNumber(@FormParam("number") String number, 
       @FormParam("userid") String userid) {

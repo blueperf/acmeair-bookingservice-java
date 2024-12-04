@@ -3,7 +3,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>acmeair-bookingservice-java</groupId>
-  <version>6.1</version>
+  <version>7.0</version>
   <artifactId>acmeair-bookingservice-java</artifactId>
   <name>acmeair-bookingservice-java</name>
   <properties>
@@ -40,10 +40,6 @@
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-rest-client</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-smallrye-metrics</artifactId>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>

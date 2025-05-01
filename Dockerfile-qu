@@ -24,7 +24,7 @@ RUN microdnf install curl ca-certificates ${JAVA_PACKAGE} \
     && chmod 540 /deployments/run-java.sh \
     && echo "securerandom.source=file:/dev/urandom" >> /etc/alternatives/jre/lib/security/java.security
 
-ENV JAVA_OPTIONS="-Dquarkus.http.port=9080 -Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager" 
+ENV JAVA_OPTIONS="-Dquarkus.http.port=9080 -Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager -Xmx512m -Dhttp.keepalive=true -Dhttp.maxConnections=100" 
 
 COPY --chown=1001 --from=builder /code/target/quarkus-app/lib/ /deployments/lib/
 COPY --chown=1001 --from=builder /code/target/quarkus-app/*.jar /deployments/

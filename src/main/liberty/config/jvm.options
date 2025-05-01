@@ -1,6 +1,3 @@
 -Xmx512m
 -Dhttp.keepalive=true
 -Dhttp.maxConnections=100
--Dcom.ibm.ws.beta.edition=true
-#-verbose:gc
-#-Xverbosegclog:/gc.log

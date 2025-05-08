@@ -6,7 +6,7 @@ COPY --chown=1001:0 src/main/liberty/config/jvm.options /config/jvm.options
 COPY --chown=1001:0 src/main/liberty/config/bootstrap.properties /config/bootstrap.properties
 
 # App
-COPY --chown=1001:0 target/acmeair-bookingservice-java-7.0.war /config/apps/
+COPY --chown=1001:0 target/acmeair-bookingservice-java-7.1.war /config/apps/
 
 # Logging vars
 ENV LOGGING_FORMAT=simple

@@ -3,7 +3,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>acmeair-bookingservice-java</groupId>
-  <version>7.0</version>
+  <version>7.1</version>
   <artifactId>acmeair-bookingservice-java</artifactId>
   <name>acmeair-bookingservice-java</name>
   <properties>
